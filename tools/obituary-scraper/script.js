@@ -343,9 +343,11 @@ function analyzePageObituaries(html) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
 
+    const DATE_PATTERN = /\b(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?\s+\d{1,2},?\s+\d{4}\b|\b\d{1,2}\/\d{1,2}\/\d{4}\b|\b\d{4}-\d{2}-\d{2}\b/i;
+
     // ── STEP 1: Find obituary container elements using tiered selectors ──
 
-    // Tier 1: Precise obituary item selectors (exact class match, one per person)
+    // Tier 1: Precise obituary item selectors
     const tier1Selectors = [
         '.obituary-item', '.obit-item', '.obituary-card', '.obit-card',
         '.obituary-entry', '.obit-entry', '.obituary-listing', '.obit-listing',
@@ -353,12 +355,12 @@ function analyzePageObituaries(html) {
         '[data-obituary]', '.tribute-item', '.tribute-card',
     ];
 
-    // Tier 2: Platform-specific container selectors (exact class, not wildcard)
+    // Tier 2: Platform-specific container selectors
     const tier2Selectors = [
-        // Essential Grid — ONLY the top-level entry, not sub-elements
+        // Essential Grid
         '.esg-entry',
         // FrontRunner Professional
-        '.fr-obit', '.fr-tribute',
+        '.fr-obit', '.fr-tribute', '.fh-obit',
         // Tukios
         '.tukios-obit',
         // FuneralOne / Batesville
@@ -367,14 +369,16 @@ function analyzePageObituaries(html) {
         'article.post', 'article.type-post',
         // Generic repeating items
         '.post-item', '.entry-item', '.listing-item',
-        '.person-card', '.person-item',
+        '.person-card', '.person-item', '.memorial-item',
     ];
 
-    // Tier 3: Broader wildcard selectors (only if tiers 1 & 2 found nothing)
+    // Tier 3: Broad wildcard selectors (no trailing hyphens — match any element containing the word)
     const tier3Selectors = [
-        '[class*="obituary-"]', '[class*="obit-"]',
-        '[class*="tribute-"]',
+        '[class*="obituary"]', '[class*="obit"]',
+        '[class*="tribute"]', '[class*="memorial"]',
+        '[class*="deceased"]', '[class*="decedent"]',
         '[id*="obituary"] > *', '[id*="obit"] > *',
+        '[id*="tribute"] > *', '[id*="memorial"] > *',
     ];
 
     let obituaryElements = [];
@@ -393,34 +397,30 @@ function analyzePageObituaries(html) {
         }
     }
 
-    // ── STEP 2: Fallback — find repeating sibling elements with dates ──
+    // ── STEP 2: Smart fallback — scan ALL elements for repeating siblings with dates ──
     if (obituaryElements.length === 0) {
-        const DATE_PATTERN = /\b(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?\s+\d{1,2},?\s+\d{4}\b|\b\d{1,2}\/\d{1,2}\/\d{4}\b|\b\d{4}-\d{2}-\d{2}\b/i;
+        const allElements = doc.querySelectorAll('div, article, li, section, a, tr, figure, span');
+        const parentMap = new Map();
 
-        // Strategy: find a parent whose direct children form a repeating list with dates
+        for (const el of allElements) {
+            const text = el.textContent || '';
+            if (text.length < 15 || text.length > 3000) continue;
+            if (!DATE_PATTERN.test(text)) continue;
+
+            const parent = el.parentElement;
+            if (!parent) continue;
+
+            if (!parentMap.has(parent)) parentMap.set(parent, []);
+            parentMap.get(parent).push(el);
+        }
+
+        // The parent with the most date-containing children is the obituary list
         let bestGroup = [];
-
-        const candidateParents = doc.querySelectorAll(
-            'ul, ol, main, .content, #content, section, ' +
-            '[class*="grid"], [class*="list"], [class*="entries"], [class*="results"], ' +
-            '[class*="container"], [class*="wrapper"], [role="list"]'
-        );
-
-        candidateParents.forEach(parent => {
-            const children = Array.from(parent.children);
-            if (children.length < 2) return;
-
-            // Count children that contain a date
-            const withDates = children.filter(child => {
-                const text = child.textContent || '';
-                return text.length > 10 && text.length < 3000 && DATE_PATTERN.test(text);
-            });
-
-            // Pick the parent whose children have the most date matches
-            if (withDates.length >= 2 && withDates.length > bestGroup.length) {
-                bestGroup = withDates;
+        for (const [parent, children] of parentMap) {
+            if (children.length >= 2 && children.length > bestGroup.length) {
+                bestGroup = children;
             }
-        });
+        }
 
         obituaryElements = bestGroup;
     }
