@@ -33,11 +33,8 @@ const OBITUARY_KEYWORDS = [
 // Store results globally for export
 let scanResults = [];
 
-// CORS proxies
-const CORS_PROXIES = [
-    'https://api.allorigins.win/raw?url=',
-    'https://corsproxy.io/?',
-];
+// ScrapingBee API key (same as link checker)
+const SCRAPINGBEE_API_KEY = 'QU0X0P0UVJBA1CWVT02SNJU58KEIX1VD22GCINS2W6T2F4GTOIHPH57LZRA4E8V6L9BZDIO72IXOX7SW';
 
 async function fetchWithProxy(url, useProxy) {
     if (!useProxy) {
@@ -45,17 +42,17 @@ async function fetchWithProxy(url, useProxy) {
         return await response.text();
     }
 
-    for (const proxy of CORS_PROXIES) {
-        try {
-            const response = await fetch(proxy + encodeURIComponent(url));
-            if (response.ok) {
-                return await response.text();
-            }
-        } catch (e) {
-            continue;
-        }
+    // Use ScrapingBee with JS rendering to get dynamically loaded content
+    const apiUrl = `https://app.scrapingbee.com/api/v1/?api_key=${SCRAPINGBEE_API_KEY}&url=${encodeURIComponent(url)}&render_js=true&wait=3000`;
+
+    const response = await fetch(apiUrl);
+
+    if (!response.ok) {
+        const errorText = await response.text().catch(() => 'Unknown error');
+        throw new Error(`ScrapingBee error ${response.status}: ${errorText}`);
     }
-    throw new Error('All proxies failed');
+
+    return await response.text();
 }
 
 function parseMonth(monthStr) {
@@ -333,26 +330,62 @@ function analyzePageObituaries(html) {
 
     let obituaryElements = [];
 
-    const allSelectors = [
+    // Tier 1: Explicit obituary selectors
+    const tier1Selectors = [
         '.obituary-item', '.obit-item', '.obituary-card', '.obit-card',
         '.obituary-entry', '.obit-entry', '.obituary-listing', '.obit-listing',
-        '[data-obituary]', '.tribute-item',
+        '[data-obituary]', '.tribute-item', '.tribute-card',
         '.obituary', '.obit', '.death-notice', '.memorial', '.tribute',
         '[class*="obituary"]', '[class*="obit"]', '[class*="memorial"]',
         '[id*="obituary"]', '[id*="obit"]',
     ];
 
+    // Tier 2: Common funeral home platform selectors
+    const tier2Selectors = [
+        // Essential Grid (WordPress plugin - common on funeral sites)
+        '.esg-entry', '.esg-media-cover-wrapper', '[class*="esg-entry"]',
+        '.eg-post-entries .esg-overflowtrick',
+        // FrontRunner Professional
+        '.fr-obit', '.fr-tribute', '[class*="fr-obit"]',
+        '.obituary-list-item', '.obit-list-item',
+        // Tukios
+        '.tukios-obit', '[class*="tukios"]',
+        // FuneralOne / Batesville
+        '.tribute-listing', '.tribute_item', '[class*="tribute"]',
+        // Frazer Consultants
+        '.frazer-obit', '[class*="frazer"]',
+        // Common CMS patterns
+        '.post-item', '.entry-item', '.listing-item',
+        '.person-card', '.person-item', '.people-item',
+        // WordPress blog-style
+        'article.post', 'article[class*="post"]',
+    ];
+
     const allMatches = new Set();
-    for (const selector of allSelectors) {
+
+    // Try tier 1 first
+    for (const selector of tier1Selectors) {
         try {
             const elements = doc.querySelectorAll(selector);
             elements.forEach(el => allMatches.add(el));
         } catch (e) {}
     }
 
+    // If tier 1 found nothing, try tier 2
+    if (allMatches.size === 0) {
+        for (const selector of tier2Selectors) {
+            try {
+                const elements = doc.querySelectorAll(selector);
+                elements.forEach(el => allMatches.add(el));
+            } catch (e) {}
+        }
+    }
+
     obituaryElements = Array.from(allMatches);
 
+    // Tier 3: Fallback — look for repeating card/item patterns with person names and dates
     if (obituaryElements.length === 0) {
+        // First try: items containing obituary keywords
         const containers = doc.querySelectorAll('article, li, .card, .item, div');
         containers.forEach(el => {
             const text = el.textContent || '';
@@ -360,6 +393,38 @@ function analyzePageObituaries(html) {
                 allMatches.add(el);
             }
         });
+
+        // Second try: items with person name + date patterns (listing pages)
+        if (allMatches.size === 0) {
+            const DATE_PATTERN = /\b(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?\s+\d{1,2},?\s+\d{4}\b|\b\d{1,2}\/\d{1,2}\/\d{4}\b|\b\d{4}-\d{2}-\d{2}\b/i;
+            const NAME_PATTERN = /^[A-Z][a-z]+\s+(?:[A-Z]\.?\s+)?[A-Z][a-z]+/;
+
+            // Find repeating sibling elements that share a common parent
+            const candidateParents = doc.querySelectorAll('ul, ol, .grid, .list, .entries, .results, [class*="grid"], [class*="list"], [class*="entries"], [class*="results"], main, .content, #content');
+
+            candidateParents.forEach(parent => {
+                const children = Array.from(parent.children);
+                if (children.length < 2) return;
+
+                // Check if multiple children have dates and look like person entries
+                let matchCount = 0;
+                const matchingChildren = [];
+
+                children.forEach(child => {
+                    const text = child.textContent || '';
+                    if (text.length > 10 && text.length < 3000 && DATE_PATTERN.test(text)) {
+                        matchCount++;
+                        matchingChildren.push(child);
+                    }
+                });
+
+                // If at least 2 siblings have dates, treat them as obituary entries
+                if (matchCount >= 2) {
+                    matchingChildren.forEach(el => allMatches.add(el));
+                }
+            });
+        }
+
         obituaryElements = Array.from(allMatches);
     }
 
