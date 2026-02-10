@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const urlsTextarea = document.getElementById('urls');
     const strategySelect = document.getElementById('strategy');
-    const apiKeyInput = document.getElementById('apiKey');
+    const API_KEY = 'AIzaSyByE-Wk1d0Jwxc-DLywZxdsijUp_q22Efc';
     const analyzeBtn = document.getElementById('analyzeBtn');
     const progressSection = document.getElementById('progressSection');
     const progressFill = document.getElementById('progressFill');
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const strategy = strategySelect.value;
-        const apiKey = apiKeyInput.value.trim();
+        const apiKey = API_KEY;
 
         // Reset UI
         results = [];
