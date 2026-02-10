@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Security Report - Jamel Moyano</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        h1 {
+            color: #00d4ff;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0,212,255,0.3);
+        }
+        .subtitle {
+            color: #888;
+            font-size: 1.1em;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            color: #888;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .danger { color: #ff4757; }
+        .warning { color: #ffa502; }
+        .info { color: #00d4ff; }
+        .success { color: #2ed573; }
+
+        .section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .section-title {
+            color: #00d4ff;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(0,212,255,0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .icon {
+            font-size: 1.2em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        th {
+            background: rgba(0,212,255,0.1);
+            color: #00d4ff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 1px;
+        }
+        tr:hover {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .risk-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .risk-high {
+            background: rgba(255,71,87,0.2);
+            color: #ff4757;
+            border: 1px solid #ff4757;
+        }
+        .risk-medium {
+            background: rgba(255,165,2,0.2);
+            color: #ffa502;
+            border: 1px solid #ffa502;
+        }
+        .risk-low {
+            background: rgba(46,213,115,0.2);
+            color: #2ed573;
+            border: 1px solid #2ed573;
+        }
+
+        .email-sender {
+            font-weight: 600;
+            color: #fff;
+        }
+        .email-address {
+            font-size: 0.85em;
+            color: #888;
+            word-break: break-all;
+        }
+        .email-subject {
+            color: #ccc;
+        }
+        .threat-type {
+            font-size: 0.85em;
+            color: #ff6b81;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .tip-box {
+            background: rgba(0,212,255,0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 0 10px 10px 0;
+        }
+        .tip-title {
+            color: #00d4ff;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .tip-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        .tip-list li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        .tip-list li:before {
+            content: ">";
+            position: absolute;
+            left: 0;
+            color: #00d4ff;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            table {
+                font-size: 0.85em;
+            }
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Email Security Report</h1>
+            <p class="subtitle">Comprehensive analysis of potential threats in your mailbox</p>
+            <p class="subtitle" style="margin-top: 10px; color: #666;">Generated: January 22, 2026 | Account: Jamel Moyano</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number danger">8</div>
+                <div class="stat-label">High Risk Emails</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number warning">12</div>
+                <div class="stat-label">Medium Risk</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number info">15+</div>
+                <div class="stat-label">Spam/Marketing</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number success">Safe</div>
+                <div class="stat-label">Focused Inbox</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title"><span class="icon">&#9888;</span> High Risk - Potential Phishing Emails</h2>
+            <p style="color: #ff6b81; margin-bottom: 15px;">These emails show strong indicators of phishing attempts. DO NOT click any links or download attachments.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sender</th>
+                        <th>Subject</th>
+                        <th>Risk Level</th>
+                        <th>Threat Indicators</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Anthropic</div>
+                            <div class="email-address">no-reply-w6n_RrEKAlgZzLSKNiJRYg@mail.anthropic...</div>
+                        </td>
+                        <td class="email-subject">Secure link to log in to Claude.ai | 2026...</td>
+                        <td><span class="risk-badge risk-high">High</span></td>
+                        <td class="threat-type">Random string in email address, multiple similar emails with different random addresses</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Anthropic</div>
+                            <div class="email-address">no-reply-JQ82wKwmowF1UeJg-Rpgrg@mail.anthro...</div>
+                        </td>
+                        <td class="email-subject">Secure link to log in to Claude.ai | 2026...</td>
+                        <td><span class="risk-badge risk-high">High</span></td>
+                        <td class="threat-type">Suspicious random string pattern, impersonating Anthropic</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Anthropic</div>
+                            <div class="email-address">no-reply-erVwUlDOoWHX8J-qnYLWGQ@mail.anthr...</div>
+                        </td>
+                        <td class="email-subject">Secure link to log in to Claude.ai | 2026...</td>
+                        <td><span class="risk-badge risk-high">High</span></td>
+                        <td class="threat-type">Multiple login requests from different addresses</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Defender</div>
+                            <div class="email-address">noreply@gilliesmortuary.identificationtool.com</div>
+                        </td>
+                        <td class="email-subject">Security Recommendation Report for https...</td>
+                        <td><span class="risk-badge risk-high">High</span></td>
+                        <td class="threat-type">Impersonating Microsoft Defender, sent from mortuary domain</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Justin Baxley</div>
+                            <div class="email-address">justin@whitakerfuneralhome.com</div>
+                        </td>
+                        <td class="email-subject">Fw: Bonus Disbursement</td>
+                        <td><span class="risk-badge risk-high">High</span></td>
+                        <td class="threat-type">Financial lure from unrelated funeral home domain</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Jaime Sanchez</div>
+                            <div class="email-address">+25570988499207927@textmagic.com</div>
+                        </td>
+                        <td class="email-subject">Facebook message from Jaime Sanchez</td>
+                        <td><span class="risk-badge risk-high">High</span></td>
+                        <td class="threat-type">Phone number as email prefix, Facebook impersonation</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Aquamations</div>
+                            <div class="email-address">info@aquamations.ca</div>
+                        </td>
+                        <td class="email-subject">Preplan Your Final Wishes And Lock In Th...</td>
+                        <td><span class="risk-badge risk-high">High</span></td>
+                        <td class="threat-type">Unsolicited funeral service, emotional manipulation</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Rhody Family Funeral Home</div>
+                            <div class="email-address">subscribe@rhodyfamily.com</div>
+                        </td>
+                        <td class="email-subject">Funeral Notice</td>
+                        <td><span class="risk-badge risk-high">High</span></td>
+                        <td class="threat-type">Marked as UNVERIFIED by Outlook, unsolicited obituary</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title"><span class="icon">&#9888;</span> Medium Risk - Suspicious/Unverified Emails</h2>
+            <p style="color: #ffa502; margin-bottom: 15px;">These emails may be legitimate but show some warning signs. Verify sender before interacting.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sender</th>
+                        <th>Subject</th>
+                        <th>Risk Level</th>
+                        <th>Concern</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Anthropic, PBC</div>
+                            <div class="email-address">invoice+statements@mail.anthropic.com</div>
+                        </td>
+                        <td class="email-subject">Your receipt from Anthropic, PBC #290...</td>
+                        <td><span class="risk-badge risk-medium">Medium</span></td>
+                        <td class="threat-type">Verify if you made this purchase</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Anthropic</div>
+                            <div class="email-address">no-reply-H6jfLKEaFPiwcaSSa6vPEg@mail.anthropic...</div>
+                        </td>
+                        <td class="email-subject">Welcome to the Max plan</td>
+                        <td><span class="risk-badge risk-medium">Medium</span></td>
+                        <td class="threat-type">Verify if you subscribed to Max plan</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">DocBot</div>
+                            <div class="email-address">External - timedoctor.co</div>
+                        </td>
+                        <td class="email-subject">Chat transcript on https://2.timedoctor.co...</td>
+                        <td><span class="risk-badge risk-medium">Medium</span></td>
+                        <td class="threat-type">External sender, verify if you used this service</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">John Collison</div>
+                            <div class="email-address">john@e.stripe.com</div>
+                        </td>
+                        <td class="email-subject">Join me at Stripe Sessions 2026</td>
+                        <td><span class="risk-badge risk-medium">Medium</span></td>
+                        <td class="threat-type">CEO impersonation common in phishing</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Team Cloudways</div>
+                            <div class="email-address">success@cloudways.com</div>
+                        </td>
+                        <td class="email-subject">New Login Alert (code: 510536)</td>
+                        <td><span class="risk-badge risk-medium">Medium</span></td>
+                        <td class="threat-type">Verify if this was your login attempt</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">GitHub</div>
+                            <div class="email-address">noreply@github.com</div>
+                        </td>
+                        <td class="email-subject">[GitHub] Payment Receipt for jamelrrm</td>
+                        <td><span class="risk-badge risk-medium">Medium</span></td>
+                        <td class="threat-type">Verify if you made this GitHub purchase</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">NextGen Legacy Planning</div>
+                            <div class="email-address">External</div>
+                        </td>
+                        <td class="email-subject">[NextGen Legacy Planning] Password Chan...</td>
+                        <td><span class="risk-badge risk-medium">Medium</span></td>
+                        <td class="threat-type">Password change you didn't request?</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">[Angle Construction]</div>
+                            <div class="email-address">External</div>
+                        </td>
+                        <td class="email-subject">Password Changed</td>
+                        <td><span class="risk-badge risk-medium">Medium</span></td>
+                        <td class="threat-type">Unexpected password change notification</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Zoom App Marketplace</div>
+                            <div class="email-address">noreply-marketplace@zoom.us</div>
+                        </td>
+                        <td class="email-subject">Action required for RRM Portal - Event...</td>
+                        <td><span class="risk-badge risk-medium">Medium</span></td>
+                        <td class="threat-type">Webhook action required - verify legitimacy</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">no-reply</div>
+                            <div class="email-address">hindmanfuneralhomes.com</div>
+                        </td>
+                        <td class="email-subject">New Obituary Published - Nicholas Patrick F...</td>
+                        <td><span class="risk-badge risk-medium">Medium</span></td>
+                        <td class="threat-type">Unsolicited obituary notification</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">noreply</div>
+                            <div class="email-address">replies.acct-mgmt.com</div>
+                        </td>
+                        <td class="email-subject">New Client Added to Agency | Ring Ring...</td>
+                        <td><span class="risk-badge risk-medium">Medium</span></td>
+                        <td class="threat-type">Generic domain, verify if legitimate</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">911 Website Issues</div>
+                            <div class="email-address">External</div>
+                        </td>
+                        <td class="email-subject">Bonus Disbursement</td>
+                        <td><span class="risk-badge risk-medium">Medium</span></td>
+                        <td class="threat-type">Financial lure - common phishing tactic</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title"><span class="icon">&#128231;</span> Low Risk - Marketing/Newsletters (Spam)</h2>
+            <p style="color: #2ed573; margin-bottom: 15px;">These appear to be legitimate marketing emails but are unsolicited. Consider unsubscribing.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sender</th>
+                        <th>Subject</th>
+                        <th>Risk Level</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="email-sender">ScraperAPI</div>
+                            <div class="email-address">External</div>
+                        </td>
+                        <td class="email-subject">Scrape Smarter, Not Harder - Unlock Ju...</td>
+                        <td><span class="risk-badge risk-low">Low</span></td>
+                        <td class="threat-type">Marketing Newsletter</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Matt from FutureTools</div>
+                            <div class="email-address">futuretools@mail.beehiiv.com</div>
+                        </td>
+                        <td class="email-subject">ChatGPT gets physical / Siri gets Gemini's brain</td>
+                        <td><span class="risk-badge risk-low">Low</span></td>
+                        <td class="threat-type">Tech Newsletter</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">OpenAI Developer Community</div>
+                            <div class="email-address">External</div>
+                        </td>
+                        <td class="email-subject">[OpenAI Developer Community] Summary</td>
+                        <td><span class="risk-badge risk-low">Low</span></td>
+                        <td class="threat-type">Community Digest</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Alerts from i2k Connect</div>
+                            <div class="email-address">alerts@i2kconnect.com</div>
+                        </td>
+                        <td class="email-subject">AAAI AI-Alert for Jan 21, 2026</td>
+                        <td><span class="risk-badge risk-low">Low</span></td>
+                        <td class="threat-type">AI News Alert</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Time Doctor</div>
+                            <div class="email-address">noreply@timedoctor.com</div>
+                        </td>
+                        <td class="email-subject">[Ring Ring Marketing] Daily/Weekly Hours Tracked</td>
+                        <td><span class="risk-badge risk-low">Low</span></td>
+                        <td class="threat-type">Automated Reports (Multiple)</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">VentureBeat</div>
+                            <div class="email-address">events@goventurebeat.com / hello@billing.venturebeat.com</div>
+                        </td>
+                        <td class="email-subject">RAG systems research / Enterprise AI</td>
+                        <td><span class="risk-badge risk-low">Low</span></td>
+                        <td class="threat-type">Tech News (Multiple)</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">ClickUp Team</div>
+                            <div class="email-address">team@mail.clickup.com</div>
+                        </td>
+                        <td class="email-subject">Super Agents work like human team...</td>
+                        <td><span class="risk-badge risk-low">Low</span></td>
+                        <td class="threat-type">Product Marketing</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Stripe</div>
+                            <div class="email-address">updates@e.stripe.com</div>
+                        </td>
+                        <td class="email-subject">[Register] Get ready for AI shopping a...</td>
+                        <td><span class="risk-badge risk-low">Low</span></td>
+                        <td class="threat-type">Event Marketing</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Southie @ Imagely</div>
+                            <div class="email-address">support@imagely.com</div>
+                        </td>
+                        <td class="email-subject">Improve SEO with this AMAZING tool!</td>
+                        <td><span class="risk-badge risk-low">Low</span></td>
+                        <td class="threat-type">Product Marketing</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Grammarly</div>
+                            <div class="email-address">hello@grammarly.com</div>
+                        </td>
+                        <td class="email-subject">Your marketing stack, finally connected</td>
+                        <td><span class="risk-badge risk-low">Low</span></td>
+                        <td class="threat-type">Product Marketing</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Zoom</div>
+                            <div class="email-address">webinars@zoom.com</div>
+                        </td>
+                        <td class="email-subject">[Register now] See how teams get more do...</td>
+                        <td><span class="risk-badge risk-low">Low</span></td>
+                        <td class="threat-type">Webinar Invitation</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">AI Weekly</div>
+                            <div class="email-address">hello@newsletters.venturebeat.com</div>
+                        </td>
+                        <td class="email-subject">Junior coders still have a place in the en...</td>
+                        <td><span class="risk-badge risk-low">Low</span></td>
+                        <td class="threat-type">Tech Newsletter</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">HighLevel</div>
+                            <div class="email-address">notifications@canny.io</div>
+                        </td>
+                        <td class="email-subject">New feedback this week for HighLevel</td>
+                        <td><span class="risk-badge risk-low">Low</span></td>
+                        <td class="threat-type">Product Update</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Intuit Mailchimp</div>
+                            <div class="email-address">e.notifications@mailchimp.com</div>
+                        </td>
+                        <td class="email-subject">We're updating Free Marketing plan limits</td>
+                        <td><span class="risk-badge risk-low">Low</span></td>
+                        <td class="threat-type">Service Update</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="email-sender">Anthropic Team</div>
+                            <div class="email-address">team@email.anthropic.com</div>
+                        </td>
+                        <td class="email-subject">Do more with Claude</td>
+                        <td><span class="risk-badge risk-low">Low</span></td>
+                        <td class="threat-type">Product Marketing (Likely Legitimate)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title"><span class="icon">&#128161;</span> Security Recommendations</h2>
+
+            <div class="tip-box">
+                <div class="tip-title">Immediate Actions Required:</div>
+                <ul class="tip-list">
+                    <li>Delete all emails from funeral homes you don't recognize - these are likely phishing attempts</li>
+                    <li>Verify any "Anthropic" emails by checking if the sender address matches official domains (anthropic.com without random strings)</li>
+                    <li>Check your Anthropic/Claude.ai account for unauthorized access if you didn't request login links</li>
+                    <li>Verify the "Bonus Disbursement" email is legitimate before taking any action - financial lures are common phishing tactics</li>
+                    <li>Review your Cloudways account for any unauthorized login attempts</li>
+                </ul>
+            </div>
+
+            <div class="tip-box" style="margin-top: 15px; border-left-color: #ffa502;">
+                <div class="tip-title" style="color: #ffa502;">Red Flags to Watch For:</div>
+                <ul class="tip-list">
+                    <li><strong>Random strings in email addresses</strong> - Legitimate companies use consistent, clean email formats</li>
+                    <li><strong>Mismatched sender names and domains</strong> - "Defender" from a mortuary domain is suspicious</li>
+                    <li><strong>Unsolicited funeral/obituary notices</strong> - Common social engineering tactic</li>
+                    <li><strong>Urgency language</strong> - "Action required", "Secure link", "Password Changed"</li>
+                    <li><strong>Financial promises</strong> - "Bonus Disbursement" from unexpected sources</li>
+                    <li><strong>"Unverified" sender badges</strong> - Outlook flags these for a reason</li>
+                </ul>
+            </div>
+
+            <div class="tip-box" style="margin-top: 15px; border-left-color: #2ed573;">
+                <div class="tip-title" style="color: #2ed573;">Best Practices:</div>
+                <ul class="tip-list">
+                    <li>Never click links in suspicious emails - go directly to the website instead</li>
+                    <li>Enable two-factor authentication on all important accounts</li>
+                    <li>Regularly review your account security settings</li>
+                    <li>Report phishing emails to your IT department or email provider</li>
+                    <li>Unsubscribe from newsletters you don't read to reduce attack surface</li>
+                </ul>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #ff4757;"></div>
+                    <span>High Risk - Do not interact, delete immediately</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #ffa502;"></div>
+                    <span>Medium Risk - Verify before interacting</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #2ed573;"></div>
+                    <span>Low Risk - Marketing/Spam, safe to unsubscribe</span>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>This report was generated by analyzing your Outlook mailbox for potential security threats.</p>
+            <p style="margin-top: 10px;">Stay vigilant. When in doubt, don't click.</p>
+        </footer>
+    </div>
+</body>
+</html>

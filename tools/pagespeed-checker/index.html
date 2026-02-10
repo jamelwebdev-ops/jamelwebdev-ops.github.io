@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PageSpeed Checker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PageSpeed Checker</h1>
+            <p class="subtitle">Analyze multiple websites at once</p>
+        </header>
+
+        <main>
+            <section class="input-section">
+                <label for="urls">Enter URLs (one per line):</label>
+                <textarea id="urls" placeholder="https://example.com&#10;https://google.com&#10;https://github.com"></textarea>
+
+                <div class="options">
+                    <div class="strategy-select">
+                        <label>Device:</label>
+                        <select id="strategy">
+                            <option value="mobile">Mobile</option>
+                            <option value="desktop">Desktop</option>
+                        </select>
+                    </div>
+                    <div class="api-key-input">
+                        <label for="apiKey">API Key (optional):</label>
+                        <input type="text" id="apiKey" placeholder="Your Google API Key">
+                        <span class="hint">Get free key at <a href="https://developers.google.com/speed/docs/insights/v5/get-started" target="_blank">Google Developers</a></span>
+                    </div>
+                </div>
+
+                <button id="analyzeBtn" class="btn-primary">
+                    <span class="btn-text">Analyze URLs</span>
+                    <span class="btn-loader hidden"></span>
+                </button>
+            </section>
+
+            <section class="progress-section hidden" id="progressSection">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-text" id="progressText">Analyzing 0 of 0 URLs...</p>
+            </section>
+
+            <section class="results-section" id="resultsSection">
+                <div class="results-header hidden" id="resultsHeader">
+                    <h2>Results</h2>
+                    <button id="exportBtn" class="btn-secondary">Export CSV</button>
+                </div>
+                <div class="results-grid" id="resultsGrid"></div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Powered by Google PageSpeed Insights API</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

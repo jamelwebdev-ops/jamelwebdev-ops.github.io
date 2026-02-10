@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>US Mortality Trends & Projections 2025-2027 | Funeral Industry Guide</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: #ffffff;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 0 auto;
+            background: #ffffff;
+            page-break-after: always;
+        }
+
+        .page:last-child {
+            page-break-after: auto;
+        }
+
+        /* Cover Page */
+        .cover {
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        .cover-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cover-badge {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+        }
+
+        .cover h1 {
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            max-width: 500px;
+        }
+
+        .cover-subtitle {
+            font-size: 20px;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+
+        .cover-year {
+            font-size: 72px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 40px;
+        }
+
+        .cover-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .cover-stat {
+            text-align: center;
+        }
+
+        .cover-stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            display: block;
+        }
+
+        .cover-stat-label {
+            font-size: 11px;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cover-footer {
+            position: absolute;
+            bottom: 30mm;
+            font-size: 12px;
+            opacity: 0.6;
+        }
+
+        /* Content Pages */
+        .header {
+            border-bottom: 3px solid #1e3a5f;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header h2 {
+            color: #1e3a5f;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .header-subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        h3 {
+            color: #1e3a5f;
+            font-size: 18px;
+            margin: 25px 0 15px;
+            padding-left: 15px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #334155;
+            font-size: 14px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #eff6ff, #f0f9ff);
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .highlight-box h4 {
+            color: #1e40af;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0;
+            color: #1e3a8a;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-box.highlight {
+            background: linear-gradient(135deg, #1e3a5f, #1e40af);
+            color: white;
+            border: none;
+        }
+
+        .stat-box .value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1e3a5f;
+            display: block;
+        }
+
+        .stat-box.highlight .value {
+            color: white;
+        }
+
+        .stat-box .label {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .stat-box.highlight .label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 13px;
+        }
+
+        .data-table th {
+            background: #1e3a5f;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .data-table th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+
+        .data-table th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .data-table tr:last-child td:first-child {
+            border-radius: 0 0 0 8px;
+        }
+
+        .data-table tr:last-child td:last-child {
+            border-radius: 0 0 8px 0;
+        }
+
+        .projection-row {
+            background: linear-gradient(90deg, #eff6ff, #f0f9ff) !important;
+            font-weight: 600;
+        }
+
+        .trend-indicator {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .trend-up {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .trend-down {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .insight-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .insight-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .insight-card h4 {
+            color: #1e3a5f;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .insight-card p {
+            font-size: 13px;
+            margin-bottom: 0;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            background: #3b82f6;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .causes-list {
+            margin: 20px 0;
+        }
+
+        .cause-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .cause-rank {
+            width: 30px;
+            height: 30px;
+            background: #1e3a5f;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            margin-right: 15px;
+        }
+
+        .cause-info {
+            flex: 1;
+        }
+
+        .cause-name {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .cause-deaths {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .cause-bar-container {
+            width: 120px;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .cause-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #1e40af);
+            border-radius: 4px;
+        }
+
+        .action-box {
+            background: linear-gradient(135deg, #fef3c7, #fef9c3);
+            border: 1px solid #fbbf24;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .action-box h4 {
+            color: #92400e;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .action-box ul {
+            margin-left: 20px;
+            color: #78350f;
+        }
+
+        .action-box li {
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .checklist {
+            margin: 20px 0;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .checklist-box {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #3b82f6;
+            border-radius: 4px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .checklist-text {
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .chart-placeholder {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .mini-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 8px;
+            height: 100px;
+            margin: 20px 0;
+        }
+
+        .mini-bar {
+            width: 40px;
+            background: linear-gradient(180deg, #3b82f6, #1e40af);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+        }
+
+        .mini-bar span {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #64748b;
+        }
+
+        .mini-bar .value {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .projection-bar {
+            background: linear-gradient(180deg, #06b6d4, #0891b2) !important;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        .page-number {
+            position: absolute;
+            bottom: 15mm;
+            right: 20mm;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #1e3a5f, #1e40af);
+            color: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .cta-section h3 {
+            color: white;
+            border: none;
+            padding: 0;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .cta-section p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+        }
+
+        .source-list {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .source-list li {
+            margin-bottom: 8px;
+        }
+
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .page {
+                margin: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cover Page -->
+    <div class="page cover">
+        <div class="cover-content">
+            <div class="cover-badge">Industry Intelligence Report</div>
+            <h1>US Mortality Trends & 3-Year Projections</h1>
+            <p class="cover-subtitle">Strategic Planning Guide for Funeral Home Owners</p>
+            <div class="cover-year">2025-2027</div>
+            <div class="cover-stats">
+                <div class="cover-stat">
+                    <span class="cover-stat-value">3.07M</span>
+                    <span class="cover-stat-label">Deaths in 2024</span>
+                </div>
+                <div class="cover-stat">
+                    <span class="cover-stat-value">-3.8%</span>
+                    <span class="cover-stat-label">Rate Change</span>
+                </div>
+                <div class="cover-stat">
+                    <span class="cover-stat-value">8.92</span>
+                    <span class="cover-stat-label">2027 Projected Rate</span>
+                </div>
+            </div>
+        </div>
+        <div class="cover-footer">Data compiled from CDC, Congressional Budget Office, and Penn Wharton Budget Model | January 2026</div>
+    </div>
+
+    <!-- Page 2: Executive Summary -->
+    <div class="page">
+        <div class="header">
+            <h2>Executive Summary</h2>
+            <p class="header-subtitle">Key findings for funeral industry professionals</p>
+        </div>
+
+        <p>This report provides funeral home owners with data-driven insights into US mortality trends and projections for strategic planning. Understanding these trends is essential for staffing, capacity planning, and business development.</p>
+
+        <div class="highlight-box">
+            <h4>Key Takeaway</h4>
+            <p>After pandemic-era peaks, mortality rates are normalizing. The 2024 age-adjusted death rate of 722.0 per 100,000 is the lowest since 2020, signaling a return to pre-pandemic patterns with continued gradual decline through 2027.</p>
+        </div>
+
+        <div class="stat-grid">
+            <div class="stat-box">
+                <span class="value">3,072,039</span>
+                <span class="label">Total Deaths 2024</span>
+            </div>
+            <div class="stat-box highlight">
+                <span class="value">9.23</span>
+                <span class="label">Crude Rate per 1,000</span>
+            </div>
+            <div class="stat-box">
+                <span class="value">722.0</span>
+                <span class="label">Age-Adjusted per 100K</span>
+            </div>
+        </div>
+
+        <h3>What This Means for Your Business</h3>
+
+        <div class="insight-cards">
+            <div class="insight-card">
+                <h4><span class="icon">1</span> Stable Demand</h4>
+                <p>With over 3 million deaths annually, funeral services remain in consistent demand despite rate fluctuations.</p>
+            </div>
+            <div class="insight-card">
+                <h4><span class="icon">2</span> Aging Population</h4>
+                <p>Baby Boomer aging will sustain elevated death counts even as rates per capita decline.</p>
+            </div>
+            <div class="insight-card">
+                <h4><span class="icon">3</span> Regional Variation</h4>
+                <p>Mortality patterns vary significantly by region, affecting local market dynamics.</p>
+            </div>
+            <div class="insight-card">
+                <h4><span class="icon">4</span> Cause Shifts</h4>
+                <p>COVID-19 dropped from top 10 causes in 2024; heart disease and cancer remain dominant.</p>
+            </div>
+        </div>
+
+        <div class="action-box">
+            <h4>Strategic Planning Considerations</h4>
+            <ul>
+                <li>Plan for approximately 3 million deaths annually through 2027</li>
+                <li>Heart disease and cancer services will remain highest-volume segments</li>
+                <li>Consider expanding grief counseling as suicide became 10th leading cause</li>
+                <li>Monitor local demographic shifts for capacity planning</li>
+            </ul>
+        </div>
+
+        <div class="footer">US Mortality Trends & Projections 2025-2027 | Funeral Industry Guide</div>
+    </div>
+
+    <!-- Page 3: Historical Data -->
+    <div class="page">
+        <div class="header">
+            <h2>Historical Death Rate Analysis</h2>
+            <p class="header-subtitle">Understanding the trends that shape your market</p>
+        </div>
+
+        <h3>Crude Death Rate Trends (2018-2024)</h3>
+
+        <table class="data-table">
+            <tr>
+                <th>Year</th>
+                <th>Crude Rate (per 1,000)</th>
+                <th>Total Deaths</th>
+                <th>Year-over-Year Change</th>
+            </tr>
+            <tr>
+                <td>2018</td>
+                <td>8.68</td>
+                <td>2,839,205</td>
+                <td><span class="trend-indicator trend-down">-0.2%</span></td>
+            </tr>
+            <tr>
+                <td>2019</td>
+                <td>8.70</td>
+                <td>2,854,838</td>
+                <td><span class="trend-indicator trend-up">+0.2%</span></td>
+            </tr>
+            <tr>
+                <td>2020</td>
+                <td>10.36</td>
+                <td>3,390,000</td>
+                <td><span class="trend-indicator trend-up">+19.1%</span></td>
+            </tr>
+            <tr>
+                <td>2021</td>
+                <td>10.42</td>
+                <td>3,464,231</td>
+                <td><span class="trend-indicator trend-up">+0.6%</span></td>
+            </tr>
+            <tr>
+                <td>2022</td>
+                <td>9.80</td>
+                <td>3,273,705</td>
+                <td><span class="trend-indicator trend-down">-5.8%</span></td>
+            </tr>
+            <tr>
+                <td>2023</td>
+                <td>9.20</td>
+                <td>3,090,964</td>
+                <td><span class="trend-indicator trend-down">-6.1%</span></td>
+            </tr>
+            <tr>
+                <td>2024</td>
+                <td>9.23</td>
+                <td>3,072,039</td>
+                <td><span class="trend-indicator trend-up">+0.3%</span></td>
+            </tr>
+        </table>
+
+        <div class="mini-chart">
+            <div class="mini-bar" style="height: 45px;"><span>2018</span><div class="value">8.68</div></div>
+            <div class="mini-bar" style="height: 46px;"><span>2019</span><div class="value">8.70</div></div>
+            <div class="mini-bar" style="height: 95px;"><span>2020</span><div class="value">10.36</div></div>
+            <div class="mini-bar" style="height: 100px;"><span>2021</span><div class="value">10.42</div></div>
+            <div class="mini-bar" style="height: 80px;"><span>2022</span><div class="value">9.80</div></div>
+            <div class="mini-bar" style="height: 60px;"><span>2023</span><div class="value">9.20</div></div>
+            <div class="mini-bar" style="height: 62px;"><span>2024</span><div class="value">9.23</div></div>
+        </div>
+
+        <h3>Age-Adjusted Death Rates</h3>
+        <p>Age-adjusted rates account for population aging, providing a clearer picture of mortality trends independent of demographic shifts.</p>
+
+        <table class="data-table">
+            <tr>
+                <th>Year</th>
+                <th>Age-Adjusted Rate (per 100,000)</th>
+                <th>Change from Previous Year</th>
+            </tr>
+            <tr>
+                <td>2019</td>
+                <td>715.2</td>
+                <td>-1.2%</td>
+            </tr>
+            <tr>
+                <td>2020</td>
+                <td>835.4</td>
+                <td>+16.8% (COVID impact)</td>
+            </tr>
+            <tr>
+                <td>2021</td>
+                <td>841.6</td>
+                <td>+0.7%</td>
+            </tr>
+            <tr>
+                <td>2022</td>
+                <td>798.8</td>
+                <td>-5.1%</td>
+            </tr>
+            <tr>
+                <td>2023</td>
+                <td>750.5</td>
+                <td>-6.0%</td>
+            </tr>
+            <tr>
+                <td>2024</td>
+                <td>722.0</td>
+                <td>-3.8%</td>
+            </tr>
+        </table>
+
+        <div class="highlight-box">
+            <h4>Industry Insight</h4>
+            <p>The 2024 age-adjusted rate of 722.0 per 100,000 is the lowest since 2020, indicating mortality patterns are returning to pre-pandemic norms. However, absolute death counts remain elevated due to population growth and aging.</p>
+        </div>
+
+        <div class="footer">US Mortality Trends & Projections 2025-2027 | Funeral Industry Guide</div>
+    </div>
+
+    <!-- Page 4: 3-Year Projections -->
+    <div class="page">
+        <div class="header">
+            <h2>3-Year Mortality Projections</h2>
+            <p class="header-subtitle">Planning for 2025-2027</p>
+        </div>
+
+        <p>Projections are based on Congressional Budget Office (CBO) and Penn Wharton Budget Model methodologies, which analyze historical trends and demographic factors.</p>
+
+        <h3>Projected Crude Death Rates</h3>
+
+        <table class="data-table">
+            <tr>
+                <th>Year</th>
+                <th>Projected Rate (per 1,000)</th>
+                <th>Estimated Total Deaths</th>
+                <th>Change from 2024</th>
+            </tr>
+            <tr>
+                <td><strong>2024 (Actual)</strong></td>
+                <td>9.23</td>
+                <td>3,072,039</td>
+                <td>Baseline</td>
+            </tr>
+            <tr class="projection-row">
+                <td><strong>2025 (Projected)</strong></td>
+                <td>9.10</td>
+                <td>~3,050,000</td>
+                <td><span class="trend-indicator trend-down">-1.4%</span></td>
+            </tr>
+            <tr class="projection-row">
+                <td><strong>2026 (Projected)</strong></td>
+                <td>9.00</td>
+                <td>~3,030,000</td>
+                <td><span class="trend-indicator trend-down">-2.5%</span></td>
+            </tr>
+            <tr class="projection-row">
+                <td><strong>2027 (Projected)</strong></td>
+                <td>8.92</td>
+                <td>~3,010,000</td>
+                <td><span class="trend-indicator trend-down">-3.4%</span></td>
+            </tr>
+        </table>
+
+        <div class="mini-chart">
+            <div class="mini-bar" style="height: 80px;"><span>2024</span><div class="value">9.23</div></div>
+            <div class="mini-bar projection-bar" style="height: 72px;"><span>2025</span><div class="value">9.10</div></div>
+            <div class="mini-bar projection-bar" style="height: 65px;"><span>2026</span><div class="value">9.00</div></div>
+            <div class="mini-bar projection-bar" style="height: 60px;"><span>2027</span><div class="value">8.92</div></div>
+        </div>
+
+        <h3>Key Projection Factors</h3>
+
+        <div class="two-column">
+            <div>
+                <div class="insight-card">
+                    <h4>Declining COVID Impact</h4>
+                    <p>COVID-19 dropped from top 10 causes in 2024. Continued decline in pandemic-related mortality expected through 2027.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>Population Aging</h4>
+                    <p>Baby Boomer generation continues aging, sustaining elevated absolute death counts despite declining rates.</p>
+                </div>
+            </div>
+            <div>
+                <div class="insight-card">
+                    <h4>Healthcare Improvements</h4>
+                    <p>Advances in treatment for heart disease and cancer contributing to gradual rate decline.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>Return to Trend</h4>
+                    <p>CBO projects mortality returning to 1950-2019 average decline rate after 2027.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-box">
+            <h4>Business Planning Implications</h4>
+            <ul>
+                <li><strong>Staffing:</strong> Maintain current staffing levels; gradual decline allows natural attrition management</li>
+                <li><strong>Capacity:</strong> ~3 million annual deaths projected through 2027; plan for consistent volume</li>
+                <li><strong>Services:</strong> Heart disease and cancer remain top causes; consider specialized service packages</li>
+                <li><strong>Growth:</strong> Market consolidation opportunities as smaller operators exit</li>
+            </ul>
+        </div>
+
+        <div class="footer">US Mortality Trends & Projections 2025-2027 | Funeral Industry Guide</div>
+    </div>
+
+    <!-- Page 5: Leading Causes -->
+    <div class="page">
+        <div class="header">
+            <h2>Leading Causes of Death</h2>
+            <p class="header-subtitle">Understanding the composition of mortality</p>
+        </div>
+
+        <p>The leading causes of death directly impact funeral service needs, including timing, family circumstances, and service preferences.</p>
+
+        <h3>Top 10 Causes of Death (2023 Data)</h3>
+
+        <div class="causes-list">
+            <div class="cause-item">
+                <span class="cause-rank">1</span>
+                <div class="cause-info">
+                    <span class="cause-name">Heart Disease</span>
+                    <span class="cause-deaths">680,981 deaths (22.0%)</span>
+                </div>
+                <div class="cause-bar-container">
+                    <div class="cause-bar" style="width: 100%;"></div>
+                </div>
+            </div>
+            <div class="cause-item">
+                <span class="cause-rank">2</span>
+                <div class="cause-info">
+                    <span class="cause-name">Cancer</span>
+                    <span class="cause-deaths">613,352 deaths (19.8%)</span>
+                </div>
+                <div class="cause-bar-container">
+                    <div class="cause-bar" style="width: 90%;"></div>
+                </div>
+            </div>
+            <div class="cause-item">
+                <span class="cause-rank">3</span>
+                <div class="cause-info">
+                    <span class="cause-name">Accidents (Unintentional Injuries)</span>
+                    <span class="cause-deaths">222,698 deaths (7.2%)</span>
+                </div>
+                <div class="cause-bar-container">
+                    <div class="cause-bar" style="width: 33%;"></div>
+                </div>
+            </div>
+            <div class="cause-item">
+                <span class="cause-rank">4</span>
+                <div class="cause-info">
+                    <span class="cause-name">Stroke (Cerebrovascular)</span>
+                    <span class="cause-deaths">162,639 deaths (5.3%)</span>
+                </div>
+                <div class="cause-bar-container">
+                    <div class="cause-bar" style="width: 24%;"></div>
+                </div>
+            </div>
+            <div class="cause-item">
+                <span class="cause-rank">5</span>
+                <div class="cause-info">
+                    <span class="cause-name">Chronic Lower Respiratory Diseases</span>
+                    <span class="cause-deaths">145,357 deaths (4.7%)</span>
+                </div>
+                <div class="cause-bar-container">
+                    <div class="cause-bar" style="width: 21%;"></div>
+                </div>
+            </div>
+            <div class="cause-item">
+                <span class="cause-rank">6</span>
+                <div class="cause-info">
+                    <span class="cause-name">Alzheimer's Disease</span>
+                    <span class="cause-deaths">114,034 deaths (3.7%)</span>
+                </div>
+                <div class="cause-bar-container">
+                    <div class="cause-bar" style="width: 17%;"></div>
+                </div>
+            </div>
+            <div class="cause-item">
+                <span class="cause-rank">7</span>
+                <div class="cause-info">
+                    <span class="cause-name">Diabetes</span>
+                    <span class="cause-deaths">95,190 deaths (3.1%)</span>
+                </div>
+                <div class="cause-bar-container">
+                    <div class="cause-bar" style="width: 14%;"></div>
+                </div>
+            </div>
+            <div class="cause-item">
+                <span class="cause-rank">8</span>
+                <div class="cause-info">
+                    <span class="cause-name">Kidney Disease</span>
+                    <span class="cause-deaths">55,253 deaths (1.8%)</span>
+                </div>
+                <div class="cause-bar-container">
+                    <div class="cause-bar" style="width: 8%;"></div>
+                </div>
+            </div>
+            <div class="cause-item">
+                <span class="cause-rank">9</span>
+                <div class="cause-info">
+                    <span class="cause-name">Chronic Liver Disease</span>
+                    <span class="cause-deaths">52,222 deaths (1.7%)</span>
+                </div>
+                <div class="cause-bar-container">
+                    <div class="cause-bar" style="width: 8%;"></div>
+                </div>
+            </div>
+            <div class="cause-item">
+                <span class="cause-rank">10</span>
+                <div class="cause-info">
+                    <span class="cause-name">Suicide (2024: replaced COVID-19)</span>
+                    <span class="cause-deaths">~50,000 deaths (1.6%)</span>
+                </div>
+                <div class="cause-bar-container">
+                    <div class="cause-bar" style="width: 7%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <h4>Notable Change in 2024</h4>
+            <p>COVID-19, which was the 10th leading cause of death in 2023, dropped off the top 10 list in 2024. Suicide has now taken its place, indicating a shift in the mortality landscape and potential need for specialized grief support services.</p>
+        </div>
+
+        <div class="footer">US Mortality Trends & Projections 2025-2027 | Funeral Industry Guide</div>
+    </div>
+
+    <!-- Page 6: Strategic Recommendations & Action Items -->
+    <div class="page">
+        <div class="header">
+            <h2>Strategic Recommendations</h2>
+            <p class="header-subtitle">Action items for funeral home owners</p>
+        </div>
+
+        <h3>Capacity & Staffing Planning</h3>
+
+        <div class="checklist">
+            <div class="checklist-item">
+                <div class="checklist-box"></div>
+                <div class="checklist-text"><strong>Maintain stable staffing levels</strong> — With ~3 million deaths projected annually through 2027, significant staffing changes are unnecessary. Plan for natural attrition.</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checklist-box"></div>
+                <div class="checklist-text"><strong>Review facility capacity</strong> — Ensure your facilities can handle current volume with potential for 5-10% variability during seasonal peaks.</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checklist-box"></div>
+                <div class="checklist-text"><strong>Cross-train staff</strong> — Flexibility in roles helps manage demand fluctuations without overstaffing.</div>
+            </div>
+        </div>
+
+        <h3>Service Development</h3>
+
+        <div class="checklist">
+            <div class="checklist-item">
+                <div class="checklist-box"></div>
+                <div class="checklist-text"><strong>Expand grief counseling services</strong> — With suicide now in top 10 causes, families may need additional support services.</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checklist-box"></div>
+                <div class="checklist-text"><strong>Develop specialized packages</strong> — Heart disease (22%) and cancer (20%) account for over 40% of deaths; consider tailored service offerings.</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checklist-box"></div>
+                <div class="checklist-text"><strong>Alzheimer's/dementia services</strong> — Growing segment requiring sensitive family support and pre-planning services.</div>
+            </div>
+        </div>
+
+        <h3>Business Development</h3>
+
+        <div class="checklist">
+            <div class="checklist-item">
+                <div class="checklist-box"></div>
+                <div class="checklist-text"><strong>Pre-need marketing focus</strong> — Aging population creates opportunity for pre-arranged funeral planning services.</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checklist-box"></div>
+                <div class="checklist-text"><strong>Monitor acquisition opportunities</strong> — Market consolidation expected; smaller operators may seek exit strategies.</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checklist-box"></div>
+                <div class="checklist-text"><strong>Healthcare partnerships</strong> — Build relationships with hospice providers, hospitals, and senior care facilities.</div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h3>Data-Driven Decision Making</h3>
+            <p>Use these projections as a foundation for your strategic planning. Monitor CDC quarterly updates for any significant changes in mortality patterns that may affect your local market.</p>
+        </div>
+
+        <h3>Data Sources & Methodology</h3>
+        <ul class="source-list">
+            <li><strong>CDC National Center for Health Statistics</strong> — Official mortality data and provisional estimates</li>
+            <li><strong>Congressional Budget Office (CBO)</strong> — Demographic Outlook 2026-2056 mortality projections</li>
+            <li><strong>Penn Wharton Budget Model</strong> — Historical estimates and alternative projection methodologies</li>
+            <li><strong>World Bank</strong> — International comparative death rate data</li>
+        </ul>
+
+        <div class="highlight-box">
+            <h4>Disclaimer</h4>
+            <p>Projections are estimates based on current trends and modeling. Actual results may vary due to public health events, policy changes, or demographic shifts. This report is for informational purposes only and should not be the sole basis for business decisions.</p>
+        </div>
+
+        <div class="footer">
+            <p>US Mortality Trends & Projections 2025-2027 | Funeral Industry Guide</p>
+            <p style="margin-top: 10px;">Data compiled January 2026 | Sources: CDC, CBO, Penn Wharton Budget Model</p>
+        </div>
+    </div>
+</body>
+</html>

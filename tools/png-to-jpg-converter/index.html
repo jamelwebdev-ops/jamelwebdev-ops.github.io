@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Image to WebP Converter</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Image to WebP Converter</h1>
+            <p>Convert multiple PNG or JPG images to WebP format instantly in your browser</p>
+        </header>
+
+        <main>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                </div>
+                <p class="upload-text">Drag & drop PNG or JPG files here</p>
+                <p class="upload-subtext">or click to browse</p>
+                <input type="file" id="fileInput" accept=".png,.jpg,.jpeg,image/png,image/jpeg" multiple hidden>
+            </div>
+
+            <div class="settings">
+                <div class="setting-group">
+                    <label for="quality">WebP Quality: <span id="qualityValue">90</span>%</label>
+                    <input type="range" id="quality" min="10" max="100" value="90">
+                </div>
+                <div class="setting-group">
+                    <label for="bgColor">Background Color (for transparency):</label>
+                    <input type="color" id="bgColor" value="#ffffff">
+                </div>
+            </div>
+
+            <div class="file-list" id="fileList"></div>
+
+            <div class="actions" id="actions" style="display: none;">
+                <button class="btn btn-primary" id="convertBtn">
+                    <span>Convert All to WebP</span>
+                </button>
+                <button class="btn btn-secondary" id="downloadAllBtn" style="display: none;">
+                    <span>Download All as ZIP</span>
+                </button>
+                <button class="btn btn-outline" id="clearBtn">
+                    <span>Clear All</span>
+                </button>
+            </div>
+
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-text" id="progressText">Converting...</p>
+            </div>
+        </main>
+
+        <footer>
+            <p>All conversions happen locally in your browser. No files are uploaded to any server.</p>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

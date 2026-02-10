@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Compressor - Extract & Compress Images from Any URL</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #8892b0;
+            font-size: 1.1rem;
+        }
+
+        .input-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #00d9ff;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+        }
+
+        .input-group input::placeholder {
+            color: #6c757d;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d9ff, #00ff88);
+            color: #1a1a2e;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .options {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .option-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .option-group label {
+            color: #8892b0;
+        }
+
+        .option-group input[type="number"] {
+            width: 80px;
+            padding: 8px 12px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .status-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+
+        .status-section.active {
+            display: block;
+        }
+
+        .progress-container {
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .status-text {
+            display: flex;
+            justify-content: space-between;
+            color: #8892b0;
+            font-size: 0.9rem;
+        }
+
+        .images-found {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #00d9ff;
+        }
+
+        .images-found h3 {
+            color: #00d9ff;
+            margin-bottom: 5px;
+        }
+
+        .results-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .results-header h2 {
+            color: #00ff88;
+        }
+
+        .stats {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00d9ff;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #8892b0;
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .image-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .image-info {
+            padding: 15px;
+        }
+
+        .image-name {
+            font-size: 0.85rem;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 10px;
+        }
+
+        .size-comparison {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #8892b0;
+        }
+
+        .size-original {
+            text-decoration: line-through;
+            color: #ff6b6b;
+        }
+
+        .size-compressed {
+            color: #00ff88;
+            font-weight: 600;
+        }
+
+        .savings-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-top: 8px;
+        }
+
+        .error-card {
+            border-color: rgba(255, 107, 107, 0.3);
+        }
+
+        .error-text {
+            color: #ff6b6b;
+            font-size: 0.8rem;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #00d9ff;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .options {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .results-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .stats {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Image Compressor</h1>
+            <p class="subtitle">Extract and compress all images from any webpage to under 200KB</p>
+        </header>
+
+        <div class="input-section">
+            <div class="input-group">
+                <input type="url" id="urlInput" placeholder="Enter website URL (e.g., https://example.com)" />
+                <button class="btn btn-primary" id="extractBtn" onclick="startExtraction()">
+                    <span id="extractBtnText">Extract Images</span>
+                    <span id="extractSpinner" class="loading-spinner hidden"></span>
+                </button>
+            </div>
+            <div class="options">
+                <div class="option-group">
+                    <label for="maxSize">Max file size:</label>
+                    <input type="number" id="maxSize" value="200" min="10" max="1000" /> KB
+                </div>
+            </div>
+        </div>
+
+        <div class="status-section" id="statusSection">
+            <div class="progress-container">
+                <div class="status-text">
+                    <span id="statusMessage">Extracting images...</span>
+                    <span id="progressText">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            <div class="images-found" id="imagesFound">
+                <h3 id="imagesCount">0 images found</h3>
+                <p id="imagesInfo">Analyzing webpage...</p>
+            </div>
+            <div style="margin-top: 20px; display: flex; gap: 15px;" id="actionButtons">
+                <button class="btn btn-primary hidden" id="compressBtn" onclick="startCompression()">
+                    <span id="compressBtnText">Compress All</span>
+                    <span id="compressSpinner" class="loading-spinner hidden"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="results-header">
+                <h2>Compressed Images</h2>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="totalImages">0</div>
+                        <div class="stat-label">Images</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="originalSize">0 MB</div>
+                        <div class="stat-label">Original</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="compressedSize">0 MB</div>
+                        <div class="stat-label">Compressed</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="savedPercent">0%</div>
+                        <div class="stat-label">Saved</div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="downloadBtn" onclick="downloadAll()">
+                    Download ZIP
+                </button>
+            </div>
+            <div class="image-grid" id="imageGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentJobId = null;
+        let pollInterval = null;
+
+        async function startExtraction() {
+            const url = document.getElementById('urlInput').value.trim();
+            if (!url) {
+                alert('Please enter a URL');
+                return;
+            }
+
+            // Reset UI
+            document.getElementById('statusSection').classList.add('active');
+            document.getElementById('resultsSection').classList.remove('active');
+            document.getElementById('extractBtn').disabled = true;
+            document.getElementById('extractBtnText').textContent = 'Extracting...';
+            document.getElementById('extractSpinner').classList.remove('hidden');
+            document.getElementById('compressBtn').classList.add('hidden');
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressText').textContent = '0%';
+            document.getElementById('statusMessage').textContent = 'Extracting images from webpage...';
+            document.getElementById('imagesCount').textContent = 'Scanning...';
+            document.getElementById('imagesInfo').textContent = 'Analyzing webpage for images...';
+
+            try {
+                const response = await fetch('/api/extract', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+
+                currentJobId = data.jobId;
+                pollStatus();
+            } catch (error) {
+                alert('Error: ' + error.message);
+                resetExtractButton();
+            }
+        }
+
+        function pollStatus() {
+            if (pollInterval) clearInterval(pollInterval);
+
+            pollInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`/api/status/${currentJobId}`);
+                    const data = await response.json();
+
+                    if (data.status === 'extracted') {
+                        clearInterval(pollInterval);
+                        document.getElementById('imagesCount').textContent = `${data.total} images found`;
+                        document.getElementById('imagesInfo').textContent = 'Ready to compress. Click the button below to start.';
+                        document.getElementById('compressBtn').classList.remove('hidden');
+                        document.getElementById('progressFill').style.width = '100%';
+                        document.getElementById('progressText').textContent = '100%';
+                        document.getElementById('statusMessage').textContent = 'Extraction complete!';
+                        resetExtractButton();
+                    } else if (data.status === 'compressing') {
+                        const percent = data.total > 0 ? Math.round((data.processed / data.total) * 100) : 0;
+                        document.getElementById('progressFill').style.width = `${percent}%`;
+                        document.getElementById('progressText').textContent = `${percent}%`;
+                        document.getElementById('statusMessage').textContent = `Compressing images... (${data.processed}/${data.total})`;
+                    } else if (data.status === 'completed') {
+                        clearInterval(pollInterval);
+                        showResults(data.results);
+                        resetCompressButton();
+                    } else if (data.status === 'error') {
+                        clearInterval(pollInterval);
+                        alert('Error: ' + data.error);
+                        resetExtractButton();
+                        resetCompressButton();
+                    }
+                } catch (error) {
+                    console.error('Poll error:', error);
+                }
+            }, 500);
+        }
+
+        async function startCompression() {
+            const maxSize = parseInt(document.getElementById('maxSize').value) || 200;
+
+            document.getElementById('compressBtn').disabled = true;
+            document.getElementById('compressBtnText').textContent = 'Compressing...';
+            document.getElementById('compressSpinner').classList.remove('hidden');
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressText').textContent = '0%';
+            document.getElementById('statusMessage').textContent = 'Starting compression...';
+
+            try {
+                const response = await fetch(`/api/compress/${currentJobId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ maxSize })
+                });
+
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+
+                pollStatus();
+            } catch (error) {
+                alert('Error: ' + error.message);
+                resetCompressButton();
+            }
+        }
+
+        function showResults(results) {
+            document.getElementById('resultsSection').classList.add('active');
+            document.getElementById('statusMessage').textContent = 'Compression complete!';
+            document.getElementById('progressFill').style.width = '100%';
+            document.getElementById('progressText').textContent = '100%';
+
+            let totalOriginal = 0;
+            let totalCompressed = 0;
+            let successCount = 0;
+
+            const grid = document.getElementById('imageGrid');
+            grid.innerHTML = '';
+
+            results.forEach(result => {
+                if (result.error) {
+                    grid.innerHTML += `
+                        <div class="image-card error-card">
+                            <div class="image-preview" style="display: flex; align-items: center; justify-content: center; color: #ff6b6b;">
+                                Failed to load
+                            </div>
+                            <div class="image-info">
+                                <div class="image-name" title="${result.originalUrl}">${result.originalName || 'Unknown'}</div>
+                                <div class="error-text">${result.error}</div>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                totalOriginal += result.originalSize;
+                totalCompressed += result.compressedSize;
+                successCount++;
+
+                const savings = Math.round((1 - result.compressedSize / result.originalSize) * 100);
+                const imgSrc = `data:image/jpeg;base64,${result.buffer}`;
+
+                grid.innerHTML += `
+                    <div class="image-card">
+                        <img class="image-preview" src="${imgSrc}" alt="${result.compressedName}" loading="lazy" />
+                        <div class="image-info">
+                            <div class="image-name" title="${result.compressedName}">${result.compressedName}</div>
+                            <div class="size-comparison">
+                                <span class="size-original">${formatSize(result.originalSize)}</span>
+                                <span class="size-compressed">${formatSize(result.compressedSize)}</span>
+                            </div>
+                            ${savings > 0 ? `<span class="savings-badge">-${savings}% saved</span>` : '<span class="savings-badge" style="background: rgba(255,255,255,0.1); color: #8892b0;">Already optimized</span>'}
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Update stats
+            document.getElementById('totalImages').textContent = successCount;
+            document.getElementById('originalSize').textContent = formatSize(totalOriginal);
+            document.getElementById('compressedSize').textContent = formatSize(totalCompressed);
+            const savedPercent = totalOriginal > 0 ? Math.round((1 - totalCompressed / totalOriginal) * 100) : 0;
+            document.getElementById('savedPercent').textContent = `${savedPercent}%`;
+        }
+
+        function downloadAll() {
+            window.location.href = `/api/download/${currentJobId}`;
+        }
+
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        function resetExtractButton() {
+            document.getElementById('extractBtn').disabled = false;
+            document.getElementById('extractBtnText').textContent = 'Extract Images';
+            document.getElementById('extractSpinner').classList.add('hidden');
+        }
+
+        function resetCompressButton() {
+            document.getElementById('compressBtn').disabled = false;
+            document.getElementById('compressBtnText').textContent = 'Compress All';
+            document.getElementById('compressSpinner').classList.add('hidden');
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('urlInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') startExtraction();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>US Death Rate Analysis & Projections (2024-2027)</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">US Mortality Analytics</div>
+            <ul class="nav-links">
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#trends">Trends</a></li>
+                <li><a href="#projections">Projections</a></li>
+                <li><a href="#causes">Causes</a></li>
+                <li><a href="#sources">Sources</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>US Death Rate Analysis</h1>
+            <p>Historical Data & 3-Year Projections (2025-2027)</p>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <span class="stat-number">3.07M</span>
+                    <span class="stat-label">Deaths in 2024</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">722.0</span>
+                    <span class="stat-label">Age-Adjusted Rate per 100K</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">-3.8%</span>
+                    <span class="stat-label">Change from 2023</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="overview" class="section">
+            <h2>Overview</h2>
+            <div class="overview-grid">
+                <div class="info-card">
+                    <div class="card-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                    </div>
+                    <h3>Current Status</h3>
+                    <p>The 2024 age-adjusted death rate of 722.0 per 100,000 is the lowest since 2020, indicating recovery from the pandemic's impact on mortality.</p>
+                </div>
+                <div class="info-card">
+                    <div class="card-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="20" x2="12" y2="10"></line>
+                            <line x1="18" y1="20" x2="18" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="16"></line>
+                        </svg>
+                    </div>
+                    <h3>Key Trend</h3>
+                    <p>COVID-19 dropped from the top 10 leading causes of death in 2024, replaced by suicide as the 10th leading cause.</p>
+                </div>
+                <div class="info-card">
+                    <div class="card-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Projection Outlook</h3>
+                    <p>CBO projects mortality rates will continue declining through 2027, returning to long-term historical trends seen from 1950-2019.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="trends" class="section">
+            <h2>Historical Death Rate Trends</h2>
+            <div class="chart-container">
+                <canvas id="trendChart"></canvas>
+            </div>
+            <div class="chart-description">
+                <p>The crude death rate per 1,000 population shows the impact of COVID-19 in 2020-2021, followed by recovery in subsequent years. The rate peaked at 10.42 in 2021 and has been declining since.</p>
+            </div>
+        </section>
+
+        <section id="projections" class="section">
+            <h2>3-Year Projections (2025-2027)</h2>
+            <div class="projections-grid">
+                <div class="chart-container">
+                    <canvas id="projectionChart"></canvas>
+                </div>
+                <div class="projection-cards">
+                    <div class="projection-card">
+                        <h4>2025</h4>
+                        <div class="projection-value">9.10</div>
+                        <div class="projection-change">-1.4% from 2024</div>
+                        <p>Continued post-pandemic recovery with declining COVID-19 mortality</p>
+                    </div>
+                    <div class="projection-card">
+                        <h4>2026</h4>
+                        <div class="projection-value">9.00</div>
+                        <div class="projection-change">-1.1% from 2025</div>
+                        <p>Return to historical trend patterns based on CBO projections</p>
+                    </div>
+                    <div class="projection-card">
+                        <h4>2027</h4>
+                        <div class="projection-value">8.92</div>
+                        <div class="projection-change">-0.9% from 2026</div>
+                        <p>Projected continuation of long-term mortality rate decline</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="age-adjusted" class="section">
+            <h2>Age-Adjusted Death Rates</h2>
+            <div class="chart-container">
+                <canvas id="ageAdjustedChart"></canvas>
+            </div>
+            <div class="chart-description">
+                <p>Age-adjusted death rates provide a more accurate comparison across years by accounting for changes in population age distribution. The rate dropped significantly from 798.8 in 2022 to 722.0 in 2024.</p>
+            </div>
+        </section>
+
+        <section id="causes" class="section">
+            <h2>Leading Causes of Death (2023)</h2>
+            <div class="causes-grid">
+                <div class="chart-container causes-chart">
+                    <canvas id="causesChart"></canvas>
+                </div>
+                <div class="causes-list">
+                    <div class="cause-item">
+                        <span class="cause-rank">1</span>
+                        <div class="cause-info">
+                            <span class="cause-name">Heart Disease</span>
+                            <span class="cause-deaths">680,981 deaths</span>
+                        </div>
+                        <div class="cause-bar" style="--width: 100%;"></div>
+                    </div>
+                    <div class="cause-item">
+                        <span class="cause-rank">2</span>
+                        <div class="cause-info">
+                            <span class="cause-name">Cancer</span>
+                            <span class="cause-deaths">613,352 deaths</span>
+                        </div>
+                        <div class="cause-bar" style="--width: 90%;"></div>
+                    </div>
+                    <div class="cause-item">
+                        <span class="cause-rank">3</span>
+                        <div class="cause-info">
+                            <span class="cause-name">Accidents</span>
+                            <span class="cause-deaths">222,698 deaths</span>
+                        </div>
+                        <div class="cause-bar" style="--width: 33%;"></div>
+                    </div>
+                    <div class="cause-item">
+                        <span class="cause-rank">4</span>
+                        <div class="cause-info">
+                            <span class="cause-name">Stroke</span>
+                            <span class="cause-deaths">162,639 deaths</span>
+                        </div>
+                        <div class="cause-bar" style="--width: 24%;"></div>
+                    </div>
+                    <div class="cause-item">
+                        <span class="cause-rank">5</span>
+                        <div class="cause-info">
+                            <span class="cause-name">Chronic Lower Respiratory</span>
+                            <span class="cause-deaths">145,357 deaths</span>
+                        </div>
+                        <div class="cause-bar" style="--width: 21%;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="comparison" class="section">
+            <h2>Year-Over-Year Comparison</h2>
+            <div class="chart-container">
+                <canvas id="comparisonChart"></canvas>
+            </div>
+        </section>
+
+        <section id="sources" class="section sources-section">
+            <h2>Data Sources</h2>
+            <div class="sources-grid">
+                <a href="https://www.cdc.gov/nchs/fastats/deaths.htm" target="_blank" class="source-card">
+                    <h4>CDC FastStats</h4>
+                    <p>Official mortality statistics from the National Center for Health Statistics</p>
+                </a>
+                <a href="https://www.cbo.gov/publication/61994" target="_blank" class="source-card">
+                    <h4>Congressional Budget Office</h4>
+                    <p>The Demographic Outlook: 2026 to 2056 - mortality projections</p>
+                </a>
+                <a href="https://budgetmodel.wharton.upenn.edu/issues/2024/10/14/mortality-in-the-united-states-historical-estimates-and-projections" target="_blank" class="source-card">
+                    <h4>Penn Wharton Budget Model</h4>
+                    <p>Mortality in the United States: Historical Estimates and Projections</p>
+                </a>
+                <a href="https://www.cdc.gov/nchs/nvss/vsrr/mortality-dashboard.htm" target="_blank" class="source-card">
+                    <h4>CDC Mortality Dashboard</h4>
+                    <p>Quarterly Provisional Mortality Estimates</p>
+                </a>
+            </div>
+            <div class="disclaimer">
+                <p><strong>Disclaimer:</strong> Projections for 2025-2027 are based on CBO and Penn Wharton Budget Model methodologies. 2024 data is provisional as of September 2025. Actual results may vary based on unforeseen health events, policy changes, or demographic shifts.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>US Death Rate Analysis Dashboard | Data compiled from CDC, CBO, and Penn Wharton Budget Model</p>
+            <p>Last updated: January 2026</p>
+        </div>
+    </footer>
+
+    <script src="charts.js"></script>
+</body>
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Calendar - January 18-24, 2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .today-badge {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .day-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .day-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .day-card.today {
+            border: 3px solid #ff6b6b;
+            background: linear-gradient(to bottom, #fff5f5 0%, white 100%);
+        }
+
+        .day-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .day-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .day-date {
+            font-size: 1rem;
+            color: #888;
+        }
+
+        .today-label {
+            background: #ff6b6b;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .events-list {
+            list-style: none;
+        }
+
+        .event {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            margin-bottom: 12px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            transition: background 0.2s ease;
+        }
+
+        .event:hover {
+            background: #f0f1f3;
+        }
+
+        .event.cancelled {
+            border-left-color: #dc3545;
+            opacity: 0.7;
+        }
+
+        .event.cancelled .event-title {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .event-time {
+            min-width: 100px;
+            font-size: 0.9rem;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .event-details {
+            flex: 1;
+        }
+
+        .event-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .event-meta {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .event-meta span {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .event-meta svg {
+            width: 14px;
+            height: 14px;
+            margin-right: 5px;
+        }
+
+        .platform-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .teams {
+            background: #5b5fc7;
+            color: white;
+        }
+
+        .zoom {
+            background: #2d8cff;
+            color: white;
+        }
+
+        .no-events {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+            font-style: italic;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .event {
+                flex-direction: column;
+            }
+
+            .event-time {
+                margin-bottom: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Weekly Calendar</h1>
+            <p>January 18 - 24, 2026</p>
+            <div class="today-badge">Today is Thursday, January 22</div>
+        </header>
+
+        <div class="calendar-grid">
+            <!-- Sunday -->
+            <div class="day-card">
+                <div class="day-header">
+                    <div>
+                        <div class="day-name">Sunday</div>
+                        <div class="day-date">January 18, 2026</div>
+                    </div>
+                </div>
+                <div class="no-events">No meetings scheduled</div>
+            </div>
+
+            <!-- Monday -->
+            <div class="day-card">
+                <div class="day-header">
+                    <div>
+                        <div class="day-name">Monday</div>
+                        <div class="day-date">January 19, 2026</div>
+                    </div>
+                </div>
+                <ul class="events-list">
+                    <li class="event">
+                        <div class="event-time">10:30 PM</div>
+                        <div class="event-details">
+                            <div class="event-title">Post N... <span class="platform-badge teams">Teams</span></div>
+                            <div class="event-meta">
+                                <span>Recurring event</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="event">
+                        <div class="event-time">11:30 PM</div>
+                        <div class="event-details">
+                            <div class="event-title">Monday Sprint - Web Department <span class="platform-badge teams">Teams</span></div>
+                            <div class="event-meta">
+                                <span>Organizer: Michael Bernardo</span>
+                                <span>Recurring series</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Tuesday -->
+            <div class="day-card">
+                <div class="day-header">
+                    <div>
+                        <div class="day-name">Tuesday</div>
+                        <div class="day-date">January 20, 2026</div>
+                    </div>
+                </div>
+                <ul class="events-list">
+                    <li class="event cancelled">
+                        <div class="event-time">2:00 AM</div>
+                        <div class="event-details">
+                            <div class="event-title">Canceled: Web Team - People Manager</div>
+                            <div class="event-meta">
+                                <span>This meeting was cancelled</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="event">
+                        <div class="event-time">5:00 AM</div>
+                        <div class="event-details">
+                            <div class="event-title">Web Team - People Manager Meeting <span class="platform-badge teams">Teams</span></div>
+                            <div class="event-meta">
+                                <span>Organizer: Michael Bernardo</span>
+                                <span>5:00 AM - 6:00 AM</span>
+                                <span>Recurring series</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="event">
+                        <div class="event-time">10:30 PM</div>
+                        <div class="event-details">
+                            <div class="event-title">Happy Hour <span class="platform-badge teams">Teams</span></div>
+                            <div class="event-meta">
+                                <span>Recurring event</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="event">
+                        <div class="event-time">11:00 PM</div>
+                        <div class="event-details">
+                            <div class="event-title">Web: Learn & Share <span class="platform-badge teams">Teams</span></div>
+                            <div class="event-meta">
+                                <span>Recurring series</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Wednesday -->
+            <div class="day-card">
+                <div class="day-header">
+                    <div>
+                        <div class="day-name">Wednesday</div>
+                        <div class="day-date">January 21, 2026</div>
+                    </div>
+                </div>
+                <ul class="events-list">
+                    <li class="event">
+                        <div class="event-time">3:00 AM</div>
+                        <div class="event-details">
+                            <div class="event-title">AI Skunk Works WG - Claude Code <span class="platform-badge zoom">Zoom</span></div>
+                            <div class="event-meta">
+                                <span>Organizer: Welton Hong</span>
+                                <span>3:00 AM - 3:30 AM</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="event cancelled">
+                        <div class="event-time">5:00 AM</div>
+                        <div class="event-details">
+                            <div class="event-title">Canceled: I...</div>
+                            <div class="event-meta">
+                                <span>This meeting was cancelled</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="event cancelled">
+                        <div class="event-time">6:00 AM</div>
+                        <div class="event-details">
+                            <div class="event-title">Canceled: Lan...</div>
+                            <div class="event-meta">
+                                <span>This meeting was cancelled</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="event">
+                        <div class="event-time">11:00 PM</div>
+                        <div class="event-details">
+                            <div class="event-title">Web: Learn & Share <span class="platform-badge teams">Teams</span></div>
+                            <div class="event-meta">
+                                <span>Recurring series</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Thursday (Today) -->
+            <div class="day-card today">
+                <div class="day-header">
+                    <div>
+                        <div class="day-name">Thursday</div>
+                        <div class="day-date">January 22, 2026</div>
+                    </div>
+                    <span class="today-label">TODAY</span>
+                </div>
+                <ul class="events-list">
+                    <li class="event">
+                        <div class="event-time">1:30 AM</div>
+                        <div class="event-details">
+                            <div class="event-title">AI Skunkworks <span class="platform-badge teams">Teams</span></div>
+                            <div class="event-meta">
+                                <span>Morning session</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="event">
+                        <div class="event-time">11:00 PM</div>
+                        <div class="event-details">
+                            <div class="event-title">Web: Learn & Share <span class="platform-badge teams">Teams</span></div>
+                            <div class="event-meta">
+                                <span>Organizer: Michael Bernardo</span>
+                                <span>11:00 PM - 11:30 PM</span>
+                                <span>Recurring series</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Friday -->
+            <div class="day-card">
+                <div class="day-header">
+                    <div>
+                        <div class="day-name">Friday</div>
+                        <div class="day-date">January 23, 2026</div>
+                    </div>
+                </div>
+                <ul class="events-list">
+                    <li class="event">
+                        <div class="event-time">11:00 PM</div>
+                        <div class="event-details">
+                            <div class="event-title">[30SFB] Check new reviews <span class="platform-badge teams">Teams</span></div>
+                            <div class="event-meta">
+                                <span>You're the organizer</span>
+                                <span>11:00 PM - 11:30 PM</span>
+                                <span>Recurring series</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="event">
+                        <div class="event-time">11:00 PM</div>
+                        <div class="event-details">
+                            <div class="event-title">[30SFB] CI... <span class="platform-badge teams">Teams</span></div>
+                            <div class="event-meta">
+                                <span>Recurring series</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Saturday -->
+            <div class="day-card">
+                <div class="day-header">
+                    <div>
+                        <div class="day-name">Saturday</div>
+                        <div class="day-date">January 24, 2026</div>
+                    </div>
+                </div>
+                <ul class="events-list">
+                    <li class="event">
+                        <div class="event-time">5:00 AM</div>
+                        <div class="event-details">
+                            <div class="event-title">Happy Hour - Web <span class="platform-badge teams">Teams</span></div>
+                            <div class="event-meta">
+                                <span>Organizer: Michael Berna</span>
+                                <span>Microsoft Teams Meeting</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <footer>
+            <p>Generated on January 22, 2026 | Jamel Moyano's Calendar</p>
+        </footer>
+    </div>
+</body>
+</html>

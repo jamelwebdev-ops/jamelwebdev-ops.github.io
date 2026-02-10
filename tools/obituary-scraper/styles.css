@@ -1,0 +1,383 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #e0e0e0;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: #1f2937;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    text-align: center;
+    color: #60a5fa;
+    margin-bottom: 10px;
+    font-size: 2rem;
+}
+
+.description {
+    text-align: center;
+    color: #9ca3af;
+    margin-bottom: 25px;
+}
+
+.input-section {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #d1d5db;
+}
+
+textarea {
+    width: 100%;
+    height: 150px;
+    padding: 15px;
+    border: 2px solid #374151;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    resize: vertical;
+    background: #111827;
+    color: #e5e7eb;
+    transition: border-color 0.3s;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #60a5fa;
+}
+
+textarea::placeholder {
+    color: #6b7280;
+}
+
+.url-help {
+    margin-top: 12px;
+    padding: 12px 15px;
+    background: #0d1117;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    border-left: 3px solid #3b82f6;
+}
+
+.url-help strong {
+    color: #60a5fa;
+}
+
+.url-help ul {
+    margin: 8px 0 0 20px;
+    color: #9ca3af;
+}
+
+.url-help li {
+    margin: 4px 0;
+}
+
+.url-help code {
+    background: #374151;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    color: #fbbf24;
+}
+
+.options {
+    margin-bottom: 20px;
+}
+
+.options label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.options input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+button {
+    display: block;
+    width: 100%;
+    padding: 14px 24px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.1s;
+}
+
+button:hover {
+    background: #2563eb;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+button:disabled {
+    background: #4b5563;
+    cursor: not-allowed;
+}
+
+.progress {
+    margin-top: 25px;
+    text-align: center;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #374151;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+#progressText {
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+.results {
+    margin-top: 30px;
+}
+
+.results h2 {
+    color: #60a5fa;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+}
+
+.website-card {
+    background: #111827;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    border: 1px solid #374151;
+}
+
+.website-header {
+    background: #1f2937;
+    padding: 15px 20px;
+    border-bottom: 1px solid #374151;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.website-url {
+    font-weight: 600;
+    color: #60a5fa;
+    word-break: break-all;
+    font-size: 0.95rem;
+}
+
+.website-status {
+    font-size: 0.85rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.status-success {
+    background: rgba(52, 211, 153, 0.2);
+    color: #34d399;
+}
+
+.status-error {
+    background: rgba(248, 113, 113, 0.2);
+    color: #f87171;
+}
+
+.status-pending {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+}
+
+.scanning-message {
+    padding: 20px;
+    text-align: center;
+    color: #9ca3af;
+}
+
+.scan-status {
+    display: inline-block;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.website-summary {
+    display: flex;
+    gap: 30px;
+    padding: 15px 20px;
+    background: #0d1117;
+    flex-wrap: wrap;
+}
+
+.summary-stat {
+    text-align: center;
+}
+
+.summary-stat .number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #60a5fa;
+}
+
+.summary-stat .label {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    text-transform: uppercase;
+}
+
+.monthly-table-container {
+    padding: 15px 20px;
+    overflow-x: auto;
+}
+
+.monthly-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.monthly-table th,
+.monthly-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #374151;
+}
+
+.monthly-table th {
+    background: #1f2937;
+    font-weight: 600;
+    color: #d1d5db;
+    position: sticky;
+    top: 0;
+}
+
+.monthly-table td {
+    color: #e5e7eb;
+}
+
+.monthly-table tr:last-child td {
+    border-bottom: none;
+}
+
+.monthly-table tr:hover td {
+    background: #1f2937;
+}
+
+.count-cell {
+    font-weight: 600;
+    color: #34d399;
+}
+
+.count-bar {
+    display: inline-block;
+    height: 8px;
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+    border-radius: 4px;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+.error-message {
+    padding: 20px;
+    color: #f87171;
+    text-align: center;
+}
+
+.no-data {
+    padding: 20px;
+    color: #9ca3af;
+    text-align: center;
+    font-style: italic;
+}
+
+.current-month {
+    background: rgba(96, 165, 250, 0.1);
+}
+
+.current-tag {
+    font-size: 0.7rem;
+    background: #3b82f6;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.hidden {
+    display: none;
+}
+
+.results > button {
+    width: auto;
+    padding: 10px 20px;
+    background: #10b981;
+    margin-top: 10px;
+}
+
+.results > button:hover {
+    background: #059669;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .website-summary {
+        gap: 15px;
+    }
+
+    .summary-stat .number {
+        font-size: 1.4rem;
+    }
+
+    .monthly-table th,
+    .monthly-table td {
+        padding: 8px;
+    }
+}
