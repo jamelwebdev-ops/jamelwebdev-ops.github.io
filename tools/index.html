@@ -104,6 +104,35 @@
 
         .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
         .empty-state p { font-size: 16px; }
+
+        .section-divider {
+            margin: 56px 0 32px;
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .section-desc {
+            font-size: 14px;
+            font-weight: 300;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 24px;
+        }
+
+        .tool-card .download-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #e94560;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -173,6 +202,25 @@
                 <div class="tool-icon">&#127968;</div>
                 <div class="tool-name">Windows & Doors Demo</div>
                 <div class="tool-desc">Premium home improvement website demo with hero slider, services, and testimonials.</div>
+            </a>
+        </div>
+
+        <hr class="section-divider">
+        <h2 class="section-title">Plugins & Themes</h2>
+        <p class="section-desc">WordPress plugins and themes ready to download and install.</p>
+
+        <div class="tools-grid">
+            <a href="/tools/downloads/auto-resave-content.zip" class="tool-card" download>
+                <div class="tool-icon">&#128260;</div>
+                <div class="tool-name">Auto Resave Content</div>
+                <div class="tool-desc">WordPress plugin that re-saves all posts and pages to refresh permalinks, update caches, and trigger save hooks.</div>
+                <span class="download-badge">&#11015; Download Plugin</span>
+            </a>
+            <a href="/tools/downloads/windows-doors-modern-theme.zip" class="tool-card" download>
+                <div class="tool-icon">&#127968;</div>
+                <div class="tool-name">Windows & Doors Theme</div>
+                <div class="tool-desc">WordPress theme for home improvement companies. Hero slider, quote form, services, testimonials, and contact section.</div>
+                <span class="download-badge">&#11015; Download Theme</span>
             </a>
         </div>
     </div>
