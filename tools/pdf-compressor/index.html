@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Compressor</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #a0aec0;
+            font-size: 1rem;
+            margin-bottom: 36px;
+        }
+
+        .accent {
+            color: #e94560;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 640px;
+        }
+
+        /* Drop Zone */
+        .drop-zone {
+            border: 2px dashed rgba(233, 69, 96, 0.5);
+            border-radius: 16px;
+            padding: 60px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: rgba(255, 255, 255, 0.03);
+            position: relative;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: #e94560;
+            background: rgba(233, 69, 96, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .drop-zone-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            display: block;
+            opacity: 0.85;
+        }
+
+        .drop-zone-text {
+            font-size: 1.1rem;
+            color: #cbd5e0;
+            line-height: 1.6;
+        }
+
+        .drop-zone-text strong {
+            color: #e94560;
+        }
+
+        .drop-zone input[type="file"] {
+            display: none;
+        }
+
+        /* Processing */
+        .status-section {
+            margin-top: 28px;
+            display: none;
+        }
+
+        .status-section.visible {
+            display: block;
+        }
+
+        .file-card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .file-name {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 14px;
+            word-break: break-all;
+            color: #e2e8f0;
+        }
+
+        .size-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 0.95rem;
+        }
+
+        .size-label {
+            color: #a0aec0;
+        }
+
+        .size-value {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin: 6px 0;
+        }
+
+        .reduction {
+            color: #48bb78;
+            font-weight: 700;
+            font-size: 1.15rem;
+        }
+
+        .reduction.none {
+            color: #ed8936;
+        }
+
+        /* Progress */
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 16px 0 8px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: #a0aec0;
+            text-align: center;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            width: 100%;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #e94560, #c0392b);
+            color: #fff;
+            margin-top: 8px;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 69, 96, 0.35);
+        }
+
+        .btn-reset {
+            background: rgba(255, 255, 255, 0.08);
+            color: #cbd5e0;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            margin-top: 10px;
+        }
+
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Error */
+        .error-msg {
+            background: rgba(233, 69, 96, 0.15);
+            border: 1px solid rgba(233, 69, 96, 0.3);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-top: 20px;
+            font-size: 0.95rem;
+            color: #feb2b2;
+            display: none;
+        }
+
+        .error-msg.visible {
+            display: block;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            padding-top: 40px;
+            font-size: 0.82rem;
+            color: #4a5568;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            h1 { font-size: 1.6rem; }
+            .drop-zone { padding: 40px 20px; }
+            .drop-zone-icon { font-size: 2.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1><span class="accent">PDF</span> Compressor</h1>
+    <p class="subtitle">Compress PDFs in your browser. Nothing leaves your machine.</p>
+
+    <div class="container">
+
+        <!-- Drop Zone -->
+        <div class="drop-zone" id="dropZone">
+            <span class="drop-zone-icon">&#128196;</span>
+            <div class="drop-zone-text">
+                Drag &amp; drop a PDF here<br>
+                or <strong>click to browse</strong>
+            </div>
+            <input type="file" id="fileInput" accept="application/pdf,.pdf">
+        </div>
+
+        <!-- Error -->
+        <div class="error-msg" id="errorMsg"></div>
+
+        <!-- Status / Results -->
+        <div class="status-section" id="statusSection">
+            <div class="file-card">
+                <div class="file-name" id="fileName"></div>
+
+                <div class="size-row">
+                    <span class="size-label">Original size</span>
+                    <span class="size-value" id="originalSize">--</span>
+                </div>
+
+                <div id="progressArea">
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">Compressing...</div>
+                </div>
+
+                <div id="resultsArea" style="display:none;">
+                    <div class="size-row">
+                        <span class="size-label">Compressed size</span>
+                        <span class="size-value" id="compressedSize">--</span>
+                    </div>
+                    <hr class="divider">
+                    <div class="size-row">
+                        <span class="size-label">Reduction</span>
+                        <span class="reduction" id="reduction">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-download" id="downloadBtn" disabled>
+                &#11015; Download Compressed PDF
+            </button>
+            <button class="btn btn-reset" id="resetBtn">
+                Compress Another
+            </button>
+        </div>
+
+    </div>
+
+    <footer>Runs 100% in your browser &mdash; no uploads, no servers.</footer>
+
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script>
+    (function () {
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const statusSection = document.getElementById('statusSection');
+        const errorMsg = document.getElementById('errorMsg');
+        const fileNameEl = document.getElementById('fileName');
+        const originalSizeEl = document.getElementById('originalSize');
+        const compressedSizeEl = document.getElementById('compressedSize');
+        const reductionEl = document.getElementById('reduction');
+        const progressArea = document.getElementById('progressArea');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const resultsArea = document.getElementById('resultsArea');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        let compressedBlob = null;
+        let compressedFileName = '';
+
+        // Format bytes to human-readable
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const units = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(1024));
+            const val = bytes / Math.pow(1024, i);
+            return val.toFixed(i === 0 ? 0 : 2) + ' ' + units[i];
+        }
+
+        // Show error
+        function showError(msg) {
+            errorMsg.textContent = msg;
+            errorMsg.classList.add('visible');
+        }
+
+        function hideError() {
+            errorMsg.classList.remove('visible');
+        }
+
+        // Reset UI
+        function resetUI() {
+            statusSection.classList.remove('visible');
+            dropZone.style.display = '';
+            hideError();
+            progressArea.style.display = '';
+            resultsArea.style.display = 'none';
+            downloadBtn.disabled = true;
+            progressBar.style.width = '0%';
+            compressedBlob = null;
+            compressedFileName = '';
+            fileInput.value = '';
+        }
+
+        // Drag-and-drop events
+        ['dragenter', 'dragover'].forEach(evt => {
+            dropZone.addEventListener(evt, function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('dragover');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(evt => {
+            dropZone.addEventListener(evt, function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('dragover');
+            });
+        });
+
+        dropZone.addEventListener('drop', function (e) {
+            const files = e.dataTransfer.files;
+            if (files.length > 0) handleFile(files[0]);
+        });
+
+        dropZone.addEventListener('click', function () {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', function () {
+            if (fileInput.files.length > 0) handleFile(fileInput.files[0]);
+        });
+
+        downloadBtn.addEventListener('click', function () {
+            if (!compressedBlob) return;
+            const url = URL.createObjectURL(compressedBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = compressedFileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        resetBtn.addEventListener('click', resetUI);
+
+        // Main handler
+        async function handleFile(file) {
+            hideError();
+
+            // Validate
+            if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+                showError('Please select a valid PDF file.');
+                return;
+            }
+
+            const originalBytes = file.size;
+
+            // Build compressed filename
+            const baseName = file.name.replace(/\.pdf$/i, '');
+            compressedFileName = baseName + '-compressed.pdf';
+
+            // Show status UI
+            dropZone.style.display = 'none';
+            statusSection.classList.add('visible');
+            fileNameEl.textContent = file.name;
+            originalSizeEl.textContent = formatBytes(originalBytes);
+            progressArea.style.display = '';
+            resultsArea.style.display = 'none';
+            downloadBtn.disabled = true;
+
+            // Simulate progress while we work
+            progressBar.style.width = '15%';
+            progressText.textContent = 'Reading PDF...';
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                progressBar.style.width = '30%';
+                progressText.textContent = 'Loading document...';
+
+                // Load the PDF
+                const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer, {
+                    ignoreEncryption: true,
+                    updateMetadata: false,
+                });
+
+                progressBar.style.width = '50%';
+                progressText.textContent = 'Stripping metadata...';
+
+                // Strip metadata
+                pdfDoc.setTitle('');
+                pdfDoc.setAuthor('');
+                pdfDoc.setSubject('');
+                pdfDoc.setKeywords([]);
+                pdfDoc.setProducer('');
+                pdfDoc.setCreator('');
+                pdfDoc.setCreationDate(new Date(0));
+                pdfDoc.setModificationDate(new Date(0));
+
+                // Remove XMP metadata if present
+                try {
+                    const catalog = pdfDoc.catalog;
+                    if (catalog && catalog.has(PDFLib.PDFName.of('Metadata'))) {
+                        catalog.delete(PDFLib.PDFName.of('Metadata'));
+                    }
+                } catch (_) {
+                    // Silently continue if XMP removal fails
+                }
+
+                // Remove document-level items that can add bloat
+                try {
+                    const catalog = pdfDoc.catalog;
+                    // Remove outlines (bookmarks)
+                    if (catalog.has(PDFLib.PDFName.of('Outlines'))) {
+                        catalog.delete(PDFLib.PDFName.of('Outlines'));
+                    }
+                    // Remove named destinations bloat
+                    if (catalog.has(PDFLib.PDFName.of('Names'))) {
+                        catalog.delete(PDFLib.PDFName.of('Names'));
+                    }
+                } catch (_) {
+                    // Continue on failure
+                }
+
+                // Remove per-page metadata and annotations
+                const pages = pdfDoc.getPages();
+                for (let i = 0; i < pages.length; i++) {
+                    try {
+                        const page = pages[i];
+                        const pageDict = page.node;
+                        // Remove annotations (comments, form fields, links)
+                        if (pageDict.has(PDFLib.PDFName.of('Annots'))) {
+                            pageDict.delete(PDFLib.PDFName.of('Annots'));
+                        }
+                        // Remove thumbnail images
+                        if (pageDict.has(PDFLib.PDFName.of('Thumb'))) {
+                            pageDict.delete(PDFLib.PDFName.of('Thumb'));
+                        }
+                        // Remove page piece info
+                        if (pageDict.has(PDFLib.PDFName.of('PieceInfo'))) {
+                            pageDict.delete(PDFLib.PDFName.of('PieceInfo'));
+                        }
+                    } catch (_) {
+                        // Continue
+                    }
+                }
+
+                progressBar.style.width = '70%';
+                progressText.textContent = 'Optimizing...';
+
+                // Save with optimizations
+                const compressedBytes = await pdfDoc.save({
+                    useObjectStreams: true,       // Compress object storage
+                    addDefaultPage: false,
+                    objectsPerTick: 100,
+                });
+
+                progressBar.style.width = '90%';
+                progressText.textContent = 'Finalizing...';
+
+                const compressedSize = compressedBytes.length;
+                const reduction = originalBytes > 0
+                    ? ((1 - compressedSize / originalBytes) * 100)
+                    : 0;
+
+                // Build blob
+                compressedBlob = new Blob([compressedBytes], { type: 'application/pdf' });
+
+                // Update UI
+                progressBar.style.width = '100%';
+                await new Promise(r => setTimeout(r, 300));
+
+                progressArea.style.display = 'none';
+                resultsArea.style.display = '';
+
+                compressedSizeEl.textContent = formatBytes(compressedSize);
+
+                if (reduction > 0) {
+                    reductionEl.textContent = reduction.toFixed(1) + '% smaller';
+                    reductionEl.classList.remove('none');
+                } else {
+                    reductionEl.textContent = 'No reduction (already optimized)';
+                    reductionEl.classList.add('none');
+                }
+
+                downloadBtn.disabled = false;
+
+            } catch (err) {
+                console.error(err);
+                resetUI();
+                showError('Failed to process PDF: ' + (err.message || 'Unknown error. The file may be encrypted or corrupted.'));
+            }
+        }
+    })();
+    </script>
+
+</body>
+</html>
