@@ -117,6 +117,59 @@ function extractDate(text) {
     return null;
 }
 
+// Extract the LAST date from text (obituaries show birth - death, we want death date)
+function extractLastDate(text) {
+    const allDates = [];
+
+    // Pattern: January 15, 2024
+    const pattern1 = /\b(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?\s+\d{1,2},?\s+(\d{4})\b/gi;
+    let m;
+    while ((m = pattern1.exec(text)) !== null) {
+        const month = parseMonth(m[1]);
+        const year = parseInt(m[2]);
+        if (month !== undefined && year >= 2000 && year <= 2030) {
+            allDates.push({ month, year, index: m.index });
+        }
+    }
+
+    // Pattern: 15 January 2024
+    const pattern2 = /\b\d{1,2}\s+(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?,?\s+(\d{4})\b/gi;
+    while ((m = pattern2.exec(text)) !== null) {
+        const month = parseMonth(m[1]);
+        const year = parseInt(m[2]);
+        if (month !== undefined && year >= 2000 && year <= 2030) {
+            allDates.push({ month, year, index: m.index });
+        }
+    }
+
+    // Pattern: MM/DD/YYYY
+    const pattern3 = /\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/g;
+    while ((m = pattern3.exec(text)) !== null) {
+        const month = parseInt(m[1]) - 1;
+        const year = parseInt(m[3]);
+        if (month >= 0 && month <= 11 && year >= 2000 && year <= 2030) {
+            allDates.push({ month, year, index: m.index });
+        }
+    }
+
+    // Pattern: YYYY-MM-DD
+    const pattern4 = /\b(\d{4})-(\d{2})-(\d{2})\b/g;
+    while ((m = pattern4.exec(text)) !== null) {
+        const year = parseInt(m[1]);
+        const month = parseInt(m[2]) - 1;
+        if (month >= 0 && month <= 11 && year >= 2000 && year <= 2030) {
+            allDates.push({ month, year, index: m.index });
+        }
+    }
+
+    if (allDates.length === 0) return null;
+
+    // Return the LAST date found (death date comes after birth date)
+    allDates.sort((a, b) => a.index - b.index);
+    const last = allDates[allDates.length - 1];
+    return { month: last.month, year: last.year };
+}
+
 function isLikelyObituary(text) {
     let matchCount = 0;
     for (const pattern of OBITUARY_KEYWORDS) {
@@ -262,37 +315,8 @@ function findNextPageUrl(doc, currentUrl, currentPageNum, visitedUrls) {
         } catch {}
     }
 
-    // ── METHOD 5: Brute-force common WordPress/CMS patterns ──
-    const cleanUrl = currentUrl.replace(/\/+$/, ''); // strip trailing slash
-    const bruteForceUrls = [
-        // WordPress /page/N/
-        cleanUrl.replace(/\/page\/\d+\/?$/, '') + `/page/${nextPageNum}/`,
-        cleanUrl + `/page/${nextPageNum}/`,
-        // ?paged=N (WordPress)
-        (() => {
-            const u = new URL(currentUrl);
-            u.searchParams.set('paged', nextPageNum);
-            return u.href;
-        })(),
-        // ?page=N
-        (() => {
-            const u = new URL(currentUrl);
-            u.searchParams.set('page', nextPageNum);
-            return u.href;
-        })(),
-    ];
-
-    // Deduplicate and filter visited
-    const seen = new Set();
-    for (const url of bruteForceUrls) {
-        if (seen.has(url) || visitedUrls.has(url)) continue;
-        seen.add(url);
-        // Only return brute force if it's different from the current URL
-        if (url !== currentUrl) {
-            return { nextUrl: url, method: 'brute-force' };
-        }
-    }
-
+    // ── METHOD 5: Brute-force — DISABLED by default ──
+    // Only used when called explicitly via findNextPageUrlBruteForce
     return null;
 }
 
@@ -319,119 +343,104 @@ function analyzePageObituaries(html) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
 
-    let obituaryElements = [];
+    // ── STEP 1: Find obituary container elements using tiered selectors ──
 
-    // Tier 1: Explicit obituary selectors
+    // Tier 1: Precise obituary item selectors (exact class match, one per person)
     const tier1Selectors = [
         '.obituary-item', '.obit-item', '.obituary-card', '.obit-card',
         '.obituary-entry', '.obit-entry', '.obituary-listing', '.obit-listing',
-        '[data-obituary]', '.tribute-item', '.tribute-card',
-        '.obituary', '.obit', '.death-notice', '.memorial', '.tribute',
-        '[class*="obituary"]', '[class*="obit"]', '[class*="memorial"]',
-        '[id*="obituary"]', '[id*="obit"]',
-    ];
-
-    // Tier 2: Common funeral home platform selectors
-    const tier2Selectors = [
-        // Essential Grid (WordPress plugin - common on funeral sites)
-        '.esg-entry', '.esg-media-cover-wrapper', '[class*="esg-entry"]',
-        '.eg-post-entries .esg-overflowtrick',
-        // FrontRunner Professional
-        '.fr-obit', '.fr-tribute', '[class*="fr-obit"]',
         '.obituary-list-item', '.obit-list-item',
-        // Tukios
-        '.tukios-obit', '[class*="tukios"]',
-        // FuneralOne / Batesville
-        '.tribute-listing', '.tribute_item', '[class*="tribute"]',
-        // Frazer Consultants
-        '.frazer-obit', '[class*="frazer"]',
-        // Common CMS patterns
-        '.post-item', '.entry-item', '.listing-item',
-        '.person-card', '.person-item', '.people-item',
-        // WordPress blog-style
-        'article.post', 'article[class*="post"]',
+        '[data-obituary]', '.tribute-item', '.tribute-card',
     ];
 
-    const allMatches = new Set();
+    // Tier 2: Platform-specific container selectors (exact class, not wildcard)
+    const tier2Selectors = [
+        // Essential Grid — ONLY the top-level entry, not sub-elements
+        '.esg-entry',
+        // FrontRunner Professional
+        '.fr-obit', '.fr-tribute',
+        // Tukios
+        '.tukios-obit',
+        // FuneralOne / Batesville
+        '.tribute-listing', '.tribute_item',
+        // WordPress blog-style
+        'article.post', 'article.type-post',
+        // Generic repeating items
+        '.post-item', '.entry-item', '.listing-item',
+        '.person-card', '.person-item',
+    ];
 
-    // Try tier 1 first
-    for (const selector of tier1Selectors) {
-        try {
-            const elements = doc.querySelectorAll(selector);
-            elements.forEach(el => allMatches.add(el));
-        } catch (e) {}
-    }
+    // Tier 3: Broader wildcard selectors (only if tiers 1 & 2 found nothing)
+    const tier3Selectors = [
+        '[class*="obituary-"]', '[class*="obit-"]',
+        '[class*="tribute-"]',
+        '[id*="obituary"] > *', '[id*="obit"] > *',
+    ];
 
-    // If tier 1 found nothing, try tier 2
-    if (allMatches.size === 0) {
-        for (const selector of tier2Selectors) {
+    let obituaryElements = [];
+
+    // Try each tier, stop when we find results
+    for (const selectors of [tier1Selectors, tier2Selectors, tier3Selectors]) {
+        const matches = new Set();
+        for (const selector of selectors) {
             try {
-                const elements = doc.querySelectorAll(selector);
-                elements.forEach(el => allMatches.add(el));
-            } catch (e) {}
+                doc.querySelectorAll(selector).forEach(el => matches.add(el));
+            } catch {}
+        }
+        if (matches.size > 0) {
+            obituaryElements = Array.from(matches);
+            break;
         }
     }
 
-    obituaryElements = Array.from(allMatches);
-
-    // Tier 3: Fallback — look for repeating card/item patterns with person names and dates
+    // ── STEP 2: Fallback — find repeating sibling elements with dates ──
     if (obituaryElements.length === 0) {
-        // First try: items containing obituary keywords
-        const containers = doc.querySelectorAll('article, li, .card, .item, div');
-        containers.forEach(el => {
-            const text = el.textContent || '';
-            if (isLikelyObituary(text) && text.length > 50 && text.length < 5000) {
-                allMatches.add(el);
+        const DATE_PATTERN = /\b(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?\s+\d{1,2},?\s+\d{4}\b|\b\d{1,2}\/\d{1,2}\/\d{4}\b|\b\d{4}-\d{2}-\d{2}\b/i;
+
+        // Strategy: find a parent whose direct children form a repeating list with dates
+        let bestGroup = [];
+
+        const candidateParents = doc.querySelectorAll(
+            'ul, ol, main, .content, #content, section, ' +
+            '[class*="grid"], [class*="list"], [class*="entries"], [class*="results"], ' +
+            '[class*="container"], [class*="wrapper"], [role="list"]'
+        );
+
+        candidateParents.forEach(parent => {
+            const children = Array.from(parent.children);
+            if (children.length < 2) return;
+
+            // Count children that contain a date
+            const withDates = children.filter(child => {
+                const text = child.textContent || '';
+                return text.length > 10 && text.length < 3000 && DATE_PATTERN.test(text);
+            });
+
+            // Pick the parent whose children have the most date matches
+            if (withDates.length >= 2 && withDates.length > bestGroup.length) {
+                bestGroup = withDates;
             }
         });
 
-        // Second try: items with person name + date patterns (listing pages)
-        if (allMatches.size === 0) {
-            const DATE_PATTERN = /\b(January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?\s+\d{1,2},?\s+\d{4}\b|\b\d{1,2}\/\d{1,2}\/\d{4}\b|\b\d{4}-\d{2}-\d{2}\b/i;
-            const NAME_PATTERN = /^[A-Z][a-z]+\s+(?:[A-Z]\.?\s+)?[A-Z][a-z]+/;
-
-            // Find repeating sibling elements that share a common parent
-            const candidateParents = doc.querySelectorAll('ul, ol, .grid, .list, .entries, .results, [class*="grid"], [class*="list"], [class*="entries"], [class*="results"], main, .content, #content');
-
-            candidateParents.forEach(parent => {
-                const children = Array.from(parent.children);
-                if (children.length < 2) return;
-
-                // Check if multiple children have dates and look like person entries
-                let matchCount = 0;
-                const matchingChildren = [];
-
-                children.forEach(child => {
-                    const text = child.textContent || '';
-                    if (text.length > 10 && text.length < 3000 && DATE_PATTERN.test(text)) {
-                        matchCount++;
-                        matchingChildren.push(child);
-                    }
-                });
-
-                // If at least 2 siblings have dates, treat them as obituary entries
-                if (matchCount >= 2) {
-                    matchingChildren.forEach(el => allMatches.add(el));
-                }
-            });
-        }
-
-        obituaryElements = Array.from(allMatches);
+        obituaryElements = bestGroup;
     }
 
+    // ── STEP 3: Deduplicate — keep OUTERMOST containers, remove nested children ──
+    // If element A contains element B, keep A (the container = 1 obituary), drop B (a sub-part)
     obituaryElements = obituaryElements.filter(el => {
         for (const other of obituaryElements) {
-            if (other !== el && el.contains(other)) {
-                return false;
+            if (other !== el && other.contains(el)) {
+                return false; // el is inside other, so drop el (keep the parent)
             }
         }
         return true;
     });
 
+    // ── STEP 4: Extract the LAST date from each element (death date, not birth date) ──
     const obituaries = [];
     obituaryElements.forEach(el => {
         const text = el.textContent || '';
-        const date = extractDate(text);
+        const date = extractLastDate(text);
         obituaries.push({ date });
     });
 
@@ -447,6 +456,8 @@ async function scanUrlWithDynamicPagination(url, maxPages, useProxy, updateCallb
     let consecutiveEmpty = 0;
     let currentPageNum = 1;
     let lastMethod = '';
+    let lastContentHash = '';
+    let paginationFound = false; // track if we ever found real pagination
 
     const targetMonths = getTargetMonths();
     const oldestTargetMonth = targetMonths[targetMonths.length - 1];
@@ -468,13 +479,22 @@ async function scanUrlWithDynamicPagination(url, maxPages, useProxy, updateCallb
             }
 
             const html = await fetchWithProxy(currentUrl, useProxy);
+
+            // Content dedup: if the page body is the same as last page, stop
+            // (catches redirects that serve the same content at a different URL)
+            const contentHash = simpleHash(html);
+            if (pageCount > 1 && contentHash === lastContentHash) {
+                break; // same content as previous page — redirect loop
+            }
+            lastContentHash = contentHash;
+
             const { doc, obituaries, count } = analyzePageObituaries(html);
             totalElements += count;
 
             if (count === 0) {
                 consecutiveEmpty++;
-                if (consecutiveEmpty >= 2) {
-                    break; // Stop after 2 consecutive empty pages
+                if (consecutiveEmpty >= 1) {
+                    break; // Stop on first empty page — no point continuing
                 }
             } else {
                 consecutiveEmpty = 0;
@@ -514,28 +534,30 @@ async function scanUrlWithDynamicPagination(url, maxPages, useProxy, updateCallb
                 currentUrl = result.nextUrl;
                 lastMethod = result.method;
                 currentPageNum++;
+                paginationFound = true;
                 await sleep(500);
             } else {
-                currentUrl = null;
+                // Methods 1-4 found nothing. Only try brute-force WordPress /page/N/
+                // if this page actually had obituaries (suggesting there might be more)
+                if (count > 0 && pageCount === 1 && !paginationFound) {
+                    const cleanUrl = currentUrl.replace(/\/+$/, '');
+                    const tryUrl = cleanUrl + `/page/2/`;
+                    if (!visitedUrls.has(tryUrl)) {
+                        currentUrl = tryUrl;
+                        lastMethod = 'brute-force';
+                        currentPageNum = 2;
+                        await sleep(500);
+                    } else {
+                        currentUrl = null;
+                    }
+                } else {
+                    currentUrl = null;
+                }
             }
 
         } catch (error) {
             console.error(`Error on page ${pageCount}:`, error);
-            consecutiveEmpty++;
-            if (consecutiveEmpty >= 2) {
-                break;
-            }
-            // Try brute-force next page on error
-            currentPageNum++;
-            const cleanUrl = url.replace(/\/+$/, '');
-            const tryUrl = cleanUrl + `/page/${currentPageNum}/`;
-            if (!visitedUrls.has(tryUrl)) {
-                currentUrl = tryUrl;
-                lastMethod = 'error-recovery';
-                await sleep(500);
-            } else {
-                break;
-            }
+            break; // Stop on error — don't guess
         }
     }
 
@@ -550,6 +572,17 @@ async function scanUrlWithDynamicPagination(url, maxPages, useProxy, updateCallb
         elementsFound: totalElements,
         pagesScanned: pageCount
     };
+}
+
+// Simple hash to detect duplicate page content
+function simpleHash(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash |= 0;
+    }
+    return hash;
 }
 
 async function scanUrl(urlInput, maxPages, useProxy, updateCallback) {
