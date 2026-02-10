@@ -487,7 +487,7 @@
 
         function showError(message) {
             const errorBox = document.getElementById('errorBox');
-            errorBox.textContent = message;
+            errorBox.innerHTML = message;
             errorBox.style.display = 'block';
         }
 
@@ -537,11 +537,23 @@
         async function scrapeWebsite(url) {
             const apiUrl = `https://app.scrapingbee.com/api/v1/?api_key=${API_KEY}&url=${encodeURIComponent(url)}&render_js=false`;
 
-            const response = await fetch(apiUrl);
+            let response;
+            try {
+                response = await fetch(apiUrl);
+            } catch (networkError) {
+                throw new Error(`Network error connecting to ScrapingBee: ${networkError.message}`);
+            }
 
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`ScrapingBee error: ${response.status} - ${errorText}`);
+                const errorText = await response.text().catch(() => 'Could not read response body');
+                const headers = {};
+                response.headers.forEach((value, key) => { headers[key] = value; });
+                throw new Error(
+                    `<strong>ScrapingBee API Error</strong><br>` +
+                    `<strong>Status:</strong> ${response.status} ${response.statusText}<br>` +
+                    `<strong>URL:</strong> ${escapeHtml(url)}<br>` +
+                    `<strong>Response:</strong><br><pre style="white-space:pre-wrap;margin-top:5px;padding:10px;background:rgba(0,0,0,0.3);border-radius:6px;font-size:12px;max-height:200px;overflow:auto;">${escapeHtml(errorText)}</pre>`
+                );
             }
 
             return await response.text();
@@ -751,7 +763,7 @@
                 renderResults();
 
             } catch (error) {
-                showError(`Error: ${error.message}`);
+                showError(error.message.startsWith('<strong>') ? error.message : `<strong>Error:</strong> ${escapeHtml(error.message)}`);
             } finally {
                 document.getElementById('checkBtn').disabled = false;
                 document.getElementById('btnText').textContent = 'Scan & Check Links';
