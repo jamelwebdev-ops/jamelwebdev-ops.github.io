@@ -128,93 +128,25 @@ function isLikelyObituary(text) {
     return matchCount >= 1;
 }
 
-// Dynamically detect pagination pattern from the page
-function detectPaginationPattern(doc, currentUrl) {
+// Find the next page URL from a rendered page — tries every method on every page
+function findNextPageUrl(doc, currentUrl, currentPageNum, visitedUrls) {
     const baseUrl = new URL(currentUrl);
-    const patterns = [];
-
-    // 1. Look for pagination containers and analyze links
-    const paginationContainers = doc.querySelectorAll(
-        '.pagination, .pager, .paging, [class*="pagination"], [class*="pager"], ' +
-        '[class*="paging"], nav[aria-label*="pagination"], .page-numbers, .pages, ' +
-        '[class*="page-nav"], [class*="pagenav"]'
-    );
-
-    // 2. Find all links that look like page numbers
-    const pageLinks = new Set();
     const allLinks = doc.querySelectorAll('a[href]');
 
-    allLinks.forEach(link => {
-        const href = link.getAttribute('href') || '';
-        const text = link.textContent.trim();
-
-        // Skip non-pagination links
-        if (href === '#' || href.startsWith('javascript:') || href.startsWith('mailto:')) {
-            return;
-        }
-
-        // Check if link text is a number (page number)
-        if (/^\d+$/.test(text)) {
-            const pageNum = parseInt(text);
-            if (pageNum >= 1 && pageNum <= 500) {
-                pageLinks.add({ href, pageNum, element: link });
-            }
-        }
-    });
-
-    // 3. Analyze the page links to find the URL pattern
-    const linkArray = Array.from(pageLinks);
-    if (linkArray.length >= 2) {
-        // Sort by page number
-        linkArray.sort((a, b) => a.pageNum - b.pageNum);
-
-        // Find the pattern by comparing URLs
-        for (const linkInfo of linkArray) {
-            const href = linkInfo.href;
-            const pageNum = linkInfo.pageNum;
-
-            // Try to extract the pattern
-            const fullUrl = resolveUrl(href, baseUrl);
-            if (fullUrl) {
-                // Check various patterns
-                const patternChecks = [
-                    { regex: /([?&]page=)(\d+)/, replacement: '$1{PAGE}' },
-                    { regex: /([?&]p=)(\d+)/, replacement: '$1{PAGE}' },
-                    { regex: /([?&]pg=)(\d+)/, replacement: '$1{PAGE}' },
-                    { regex: /([?&]pagenum=)(\d+)/, replacement: '$1{PAGE}' },
-                    { regex: /([?&]paged=)(\d+)/, replacement: '$1{PAGE}' },
-                    { regex: /([?&]offset=)(\d+)/, replacement: '$1{PAGE}' },
-                    { regex: /(\/page\/)(\d+)/, replacement: '$1{PAGE}' },
-                    { regex: /(\/p\/)(\d+)/, replacement: '$1{PAGE}' },
-                    { regex: /(\/pg\/)(\d+)/, replacement: '$1{PAGE}' },
-                    { regex: /(\/pages\/)(\d+)/, replacement: '$1{PAGE}' },
-                    { regex: /(-page-)(\d+)/, replacement: '$1{PAGE}' },
-                    { regex: /(_page_)(\d+)/, replacement: '$1{PAGE}' },
-                    { regex: /(\/page)(\d+)/, replacement: '$1{PAGE}' },
-                    { regex: /(page-)(\d+)/, replacement: '$1{PAGE}' },
-                ];
-
-                for (const check of patternChecks) {
-                    if (check.regex.test(fullUrl)) {
-                        const pattern = fullUrl.replace(check.regex, check.replacement);
-                        // Verify this pattern makes sense
-                        const testUrl = pattern.replace('{PAGE}', pageNum.toString());
-                        if (testUrl === fullUrl) {
-                            patterns.push({
-                                pattern: pattern,
-                                foundPages: linkArray.map(l => l.pageNum),
-                                maxPage: Math.max(...linkArray.map(l => l.pageNum)),
-                                confidence: 'high'
-                            });
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+    // Helper: resolve and validate a candidate URL
+    function validCandidate(href) {
+        if (!href || href === '#' || href.startsWith('javascript:') || href.startsWith('mailto:')) return null;
+        const full = resolveUrl(href, baseUrl);
+        if (!full) return null;
+        try {
+            if (new URL(full).hostname !== baseUrl.hostname) return null;
+        } catch { return null; }
+        if (visitedUrls.has(full)) return null;
+        return full;
     }
 
-    // 4. Look for "Next" button/link with href
+    // ── METHOD 1: Explicit "Next" link/button (most reliable) ──
+    // CSS selectors for next buttons
     const nextSelectors = [
         'a.next', 'a.next-page', 'a[rel="next"]',
         '.pagination a.next', '.pagination .next a',
@@ -224,80 +156,144 @@ function detectPaginationPattern(doc, currentUrl) {
         'li.next a', 'li.pagination-next a',
         'a[title="Next"]', 'a[title="Next Page"]',
         '.pagination-next a', 'a.pagination__next',
-        '[class*="next"] a', 'a[class*="next"]',
+        'a[class*="next-page"]', 'a[class*="nextpage"]',
+        // Essential Grid
+        '.esg-pagination .esg-next a', '[class*="esg"] a[class*="next"]',
+        // WordPress
+        '.nav-previous a', '.nav-links .next a',
+        // Generic
+        'a[class*="next"]',
     ];
 
     for (const selector of nextSelectors) {
         try {
-            const nextLink = doc.querySelector(selector);
-            if (nextLink) {
-                const href = nextLink.getAttribute('href');
-                if (href && href !== '#' && !href.startsWith('javascript:')) {
-                    const fullUrl = resolveUrl(href, baseUrl);
-                    if (fullUrl) {
-                        patterns.push({
-                            type: 'next-link',
-                            nextUrl: fullUrl,
-                            confidence: 'medium'
-                        });
-                    }
-                }
+            const el = doc.querySelector(selector);
+            if (el) {
+                const url = validCandidate(el.getAttribute('href'));
+                if (url) return { nextUrl: url, method: 'next-selector' };
             }
-        } catch (e) {
-            continue;
-        }
+        } catch {}
     }
 
-    // 5. Look for links with "next" text
-    allLinks.forEach(link => {
-        const text = link.textContent.trim().toLowerCase();
+    // Text-based next link detection
+    const nextTextPatterns = [
+        'next', 'next page', '»', '>', '>>', '›',
+        'next →', 'next >', 'older', 'older entries',
+        'load more', 'show more', 'view more',
+    ];
+
+    for (const link of allLinks) {
+        const text = (link.textContent || '').trim().toLowerCase();
         const ariaLabel = (link.getAttribute('aria-label') || '').toLowerCase();
         const title = (link.getAttribute('title') || '').toLowerCase();
 
-        if (
-            text === 'next' || text === 'next page' || text === '»' ||
-            text === '>' || text === '>>' || text === '›' ||
-            text === 'next →' || text === 'next >' || text === 'older' ||
-            ariaLabel.includes('next') || title.includes('next')
-        ) {
-            const href = link.getAttribute('href');
-            if (href && href !== '#' && !href.startsWith('javascript:')) {
-                const fullUrl = resolveUrl(href, baseUrl);
-                if (fullUrl) {
-                    patterns.push({
-                        type: 'next-link',
-                        nextUrl: fullUrl,
-                        confidence: 'medium'
-                    });
-                }
-            }
-        }
-    });
+        const isNext = nextTextPatterns.includes(text) ||
+            ariaLabel.includes('next') || title.includes('next') ||
+            ariaLabel.includes('older') || title.includes('older');
 
-    // 6. Try to detect pattern from current URL if it has page number
-    const urlPatternChecks = [
-        { regex: /([?&]page=)(\d+)/i, replacement: '$1{PAGE}' },
-        { regex: /([?&]p=)(\d+)/i, replacement: '$1{PAGE}' },
-        { regex: /(\/page\/)(\d+)/i, replacement: '$1{PAGE}' },
-        { regex: /(\/page)(\d+)/i, replacement: '$1{PAGE}' },
+        if (isNext) {
+            const url = validCandidate(link.getAttribute('href'));
+            if (url) return { nextUrl: url, method: 'next-text' };
+        }
+    }
+
+    // ── METHOD 2: Numbered page links — find (currentPageNum + 1) ──
+    const nextPageNum = currentPageNum + 1;
+    for (const link of allLinks) {
+        const text = (link.textContent || '').trim();
+        if (text === String(nextPageNum)) {
+            const url = validCandidate(link.getAttribute('href'));
+            if (url) return { nextUrl: url, method: 'page-number' };
+        }
+    }
+
+    // ── METHOD 3: URL pattern detection from page links ──
+    const patternChecks = [
+        /([?&]page=)(\d+)/, /([?&]paged=)(\d+)/, /([?&]p=)(\d+)/,
+        /([?&]pg=)(\d+)/, /([?&]pagenum=)(\d+)/, /([?&]offset=)(\d+)/,
+        /(\/page\/)(\d+)/, /(\/p\/)(\d+)/, /(\/pg\/)(\d+)/,
+        /(\/pages\/)(\d+)/, /(-page-)(\d+)/, /(_page_)(\d+)/,
+        /(\/page)(\d+)/, /(page-)(\d+)/,
     ];
 
-    for (const check of urlPatternChecks) {
-        if (check.regex.test(currentUrl)) {
-            const pattern = currentUrl.replace(check.regex, check.replacement);
-            const match = currentUrl.match(check.regex);
+    for (const link of allLinks) {
+        const href = link.getAttribute('href');
+        const full = resolveUrl(href, baseUrl);
+        if (!full) continue;
+
+        for (const regex of patternChecks) {
+            const match = full.match(regex);
             if (match) {
-                const currentPage = parseInt(match[2]);
-                patterns.push({
-                    pattern: pattern,
-                    currentPage: currentPage,
-                    confidence: 'high'
-                });
+                const foundNum = parseInt(match[2]);
+                if (foundNum === nextPageNum) {
+                    const url = validCandidate(href);
+                    if (url) return { nextUrl: url, method: 'pattern-match' };
+                }
             }
         }
     }
 
-    return patterns;
+    // ── METHOD 4: "Load More" buttons with data attributes ──
+    const loadMoreSelectors = [
+        'button[class*="load-more"]', 'a[class*="load-more"]',
+        'button[class*="loadmore"]', 'a[class*="loadmore"]',
+        '[data-next-page]', '[data-page]', '[data-load-more]',
+        '.load-more a', '.loadmore a',
+        // Essential Grid load more
+        '.esg-loadmore', '.esg-pagination a',
+    ];
+
+    for (const selector of loadMoreSelectors) {
+        try {
+            const el = doc.querySelector(selector);
+            if (el) {
+                // Check href first
+                const href = el.getAttribute('href');
+                const url = validCandidate(href);
+                if (url) return { nextUrl: url, method: 'load-more' };
+
+                // Check data attributes for URL
+                const dataUrl = el.getAttribute('data-href') || el.getAttribute('data-url') || el.getAttribute('data-next-page');
+                if (dataUrl) {
+                    const url2 = validCandidate(dataUrl);
+                    if (url2) return { nextUrl: url2, method: 'load-more-data' };
+                }
+            }
+        } catch {}
+    }
+
+    // ── METHOD 5: Brute-force common WordPress/CMS patterns ──
+    const cleanUrl = currentUrl.replace(/\/+$/, ''); // strip trailing slash
+    const bruteForceUrls = [
+        // WordPress /page/N/
+        cleanUrl.replace(/\/page\/\d+\/?$/, '') + `/page/${nextPageNum}/`,
+        cleanUrl + `/page/${nextPageNum}/`,
+        // ?paged=N (WordPress)
+        (() => {
+            const u = new URL(currentUrl);
+            u.searchParams.set('paged', nextPageNum);
+            return u.href;
+        })(),
+        // ?page=N
+        (() => {
+            const u = new URL(currentUrl);
+            u.searchParams.set('page', nextPageNum);
+            return u.href;
+        })(),
+    ];
+
+    // Deduplicate and filter visited
+    const seen = new Set();
+    for (const url of bruteForceUrls) {
+        if (seen.has(url) || visitedUrls.has(url)) continue;
+        seen.add(url);
+        // Only return brute force if it's different from the current URL
+        if (url !== currentUrl) {
+            return { nextUrl: url, method: 'brute-force' };
+        }
+    }
+
+    return null;
 }
 
 function resolveUrl(href, baseUrl) {
@@ -316,11 +312,6 @@ function resolveUrl(href, baseUrl) {
     } catch (e) {
         return null;
     }
-}
-
-// Generate URL for a specific page number
-function generatePageUrl(pattern, pageNum) {
-    return pattern.replace('{PAGE}', pageNum.toString());
 }
 
 // Analyze a single page for obituaries
@@ -447,15 +438,15 @@ function analyzePageObituaries(html) {
     return { doc, obituaries, count: obituaryElements.length };
 }
 
-// Main scanning function with dynamic pagination detection
+// Main scanning function — re-detects pagination on every page
 async function scanUrlWithDynamicPagination(url, maxPages, useProxy, updateCallback) {
     const monthlyData = {};
     const visitedUrls = new Set();
     let totalElements = 0;
     let pageCount = 0;
     let consecutiveEmpty = 0;
-    let detectedPattern = null;
-    let currentPage = 1;
+    let currentPageNum = 1;
+    let lastMethod = '';
 
     const targetMonths = getTargetMonths();
     const oldestTargetMonth = targetMonths[targetMonths.length - 1];
@@ -472,40 +463,24 @@ async function scanUrlWithDynamicPagination(url, maxPages, useProxy, updateCallb
 
         try {
             if (updateCallback) {
-                updateCallback(`Scanning page ${pageCount}...`);
+                const methodNote = lastMethod ? ` (via ${lastMethod})` : '';
+                updateCallback(`Scanning page ${pageCount}${methodNote}...`);
             }
 
             const html = await fetchWithProxy(currentUrl, useProxy);
             const { doc, obituaries, count } = analyzePageObituaries(html);
             totalElements += count;
 
-            // On first page, detect pagination pattern
-            if (pageCount === 1) {
-                const patterns = detectPaginationPattern(doc, currentUrl);
-                if (patterns.length > 0) {
-                    // Prefer pattern-based pagination over next-link
-                    const patternBased = patterns.find(p => p.pattern);
-                    const nextLinkBased = patterns.find(p => p.type === 'next-link');
-
-                    if (patternBased) {
-                        detectedPattern = patternBased;
-                        currentPage = patternBased.currentPage || 1;
-                    } else if (nextLinkBased) {
-                        detectedPattern = nextLinkBased;
-                    }
-                }
-            }
-
             if (count === 0) {
                 consecutiveEmpty++;
-                if (consecutiveEmpty >= 3) {
-                    break;
+                if (consecutiveEmpty >= 2) {
+                    break; // Stop after 2 consecutive empty pages
                 }
             } else {
                 consecutiveEmpty = 0;
             }
 
-            // Process obituaries
+            // Process obituaries into monthly buckets
             let oldDataCount = 0;
             obituaries.forEach(obit => {
                 if (obit.date) {
@@ -527,66 +502,37 @@ async function scanUrlWithDynamicPagination(url, maxPages, useProxy, updateCallb
                 }
             });
 
-            // Stop if most data is older than target
+            // Stop if most data is older than our target range
             if (count > 0 && oldDataCount > count * 0.8) {
                 break;
             }
 
-            // Determine next URL
-            let nextUrl = null;
+            // ── Find next page — re-detect on EVERY page ──
+            const result = findNextPageUrl(doc, currentUrl, currentPageNum, visitedUrls);
 
-            // Re-detect pagination on each page for next-link type
-            const currentPatterns = detectPaginationPattern(doc, currentUrl);
-
-            // Method 1: Use detected pattern to generate next page URL
-            if (detectedPattern && detectedPattern.pattern) {
-                currentPage++;
-                nextUrl = generatePageUrl(detectedPattern.pattern, currentPage);
-
-                // Check if we've exceeded known max page
-                if (detectedPattern.maxPage && currentPage > detectedPattern.maxPage + 5) {
-                    // Allow a few extra pages beyond detected max
-                    nextUrl = null;
-                }
-            }
-            // Method 2: Use next-link from current page
-            else {
-                const nextLinkPattern = currentPatterns.find(p => p.type === 'next-link');
-                if (nextLinkPattern) {
-                    nextUrl = nextLinkPattern.nextUrl;
-                }
-            }
-
-            // Validate next URL
-            if (nextUrl) {
-                try {
-                    const currentDomain = new URL(currentUrl).hostname;
-                    const nextDomain = new URL(nextUrl).hostname;
-                    if (currentDomain === nextDomain && !visitedUrls.has(nextUrl)) {
-                        currentUrl = nextUrl;
-                    } else {
-                        currentUrl = null;
-                    }
-                } catch (e) {
-                    currentUrl = null;
-                }
+            if (result) {
+                currentUrl = result.nextUrl;
+                lastMethod = result.method;
+                currentPageNum++;
+                await sleep(500);
             } else {
                 currentUrl = null;
             }
 
-            if (currentUrl) {
-                await sleep(400);
-            }
         } catch (error) {
             console.error(`Error on page ${pageCount}:`, error);
             consecutiveEmpty++;
-            if (consecutiveEmpty >= 3) {
+            if (consecutiveEmpty >= 2) {
                 break;
             }
-            // Try next page if using pattern
-            if (detectedPattern && detectedPattern.pattern) {
-                currentPage++;
-                currentUrl = generatePageUrl(detectedPattern.pattern, currentPage);
+            // Try brute-force next page on error
+            currentPageNum++;
+            const cleanUrl = url.replace(/\/+$/, '');
+            const tryUrl = cleanUrl + `/page/${currentPageNum}/`;
+            if (!visitedUrls.has(tryUrl)) {
+                currentUrl = tryUrl;
+                lastMethod = 'error-recovery';
+                await sleep(500);
             } else {
                 break;
             }
