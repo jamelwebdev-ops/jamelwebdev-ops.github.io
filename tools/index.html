@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tools | Jamel Moyano</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            padding: 60px 24px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .back {
+            display: inline-block;
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            margin-bottom: 32px;
+            transition: color 0.2s;
+        }
+
+        .back:hover { color: #fff; }
+
+        .page-label {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #e94560;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .page-desc {
+            font-size: 16px;
+            font-weight: 300;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 48px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .tool-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 28px 24px;
+            text-decoration: none;
+            color: #fff;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            display: block;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(233, 69, 96, 0.4);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+        }
+
+        .tool-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+
+        .tool-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .tool-desc {
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.5;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 24px;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+        .empty-state p { font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back">&larr; Back to home</a>
+        <div class="page-label">Jamel Moyano</div>
+        <h1>Tools</h1>
+        <p class="page-desc">Web tools and utilities. More coming soon.</p>
+
+        <div class="tools-grid">
+            <!-- Add tool cards here as you build them. Example: -->
+            <!--
+            <a href="/tools/my-tool/" class="tool-card">
+                <div class="tool-icon">&#128295;</div>
+                <div class="tool-name">Tool Name</div>
+                <div class="tool-desc">Short description of what this tool does.</div>
+            </a>
+            -->
+        </div>
+
+        <div class="empty-state">
+            <div class="icon">&#128640;</div>
+            <p>Tools are on the way. Check back soon.</p>
+        </div>
+    </div>
+</body>
+</html>
