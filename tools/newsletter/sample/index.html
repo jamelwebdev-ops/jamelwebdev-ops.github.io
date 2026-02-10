@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Website & R&D Team Newsletter</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @page {
+            size: letter;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+            line-height: 1.6;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .newsletter {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #ffffff;
+            padding: 48px 48px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .header-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #e94560;
+            margin-bottom: 8px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 6px;
+        }
+
+        .header-subtitle {
+            font-size: 15px;
+            font-weight: 300;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .header-date {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            padding: 12px 18px;
+            text-align: center;
+            flex-shrink: 0;
+            margin-left: 24px;
+        }
+
+        .header-date .month {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #e94560;
+        }
+
+        .header-date .edition {
+            font-size: 13px;
+            font-weight: 400;
+            color: rgba(255,255,255,0.6);
+            margin-top: 2px;
+        }
+
+        /* STATS BAR */
+        .stats-bar {
+            display: flex;
+            background: #f8f9fb;
+            border-bottom: 1px solid #e8eaed;
+        }
+
+        .stat-item {
+            flex: 1;
+            text-align: center;
+            padding: 20px 16px;
+            border-right: 1px solid #e8eaed;
+        }
+
+        .stat-item:last-child { border-right: none; }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0f3460;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        /* CONTENT */
+        .content {
+            padding: 40px 48px;
+        }
+
+        .section {
+            margin-bottom: 36px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f2f5;
+        }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .section-icon.blue { background: #e8f0fe; }
+        .section-icon.green { background: #e6f4ea; }
+        .section-icon.orange { background: #fef3e2; }
+        .section-icon.purple { background: #f3e8fd; }
+        .section-icon.teal { background: #e0f7fa; }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        /* INTRO */
+        .intro {
+            background: #f8f9fb;
+            border-left: 4px solid #0f3460;
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 36px;
+            font-size: 14px;
+            color: #444;
+        }
+
+        .intro strong { color: #1a1a2e; }
+
+        /* PROJECT CARDS */
+        .project-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .project-card {
+            border: 1px solid #e8eaed;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .project-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 6px;
+        }
+
+        .project-status {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+
+        .status-active { background: #e6f4ea; color: #1e7e34; }
+        .status-review { background: #fef3e2; color: #c67700; }
+        .status-planning { background: #e8f0fe; color: #1a56db; }
+
+        .project-desc {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        /* UPDATE LIST */
+        .update-list {
+            list-style: none;
+        }
+
+        .update-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f2f5;
+            font-size: 14px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .update-list li:last-child { border-bottom: none; }
+
+        .update-bullet {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e94560;
+            flex-shrink: 0;
+            margin-top: 7px;
+        }
+
+        .update-text { flex: 1; }
+        .update-text strong { color: #1a1a2e; }
+
+        /* WINS */
+        .wins-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .win-card {
+            background: linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%);
+            border: 1px solid #e8eaed;
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .win-card .win-emoji { font-size: 24px; margin-bottom: 8px; }
+        .win-card .win-name { font-size: 13px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+        .win-card .win-desc { font-size: 13px; color: #555; }
+
+        /* TIP BOX */
+        .tip-box {
+            background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 100%);
+            color: #fff;
+            border-radius: 10px;
+            padding: 24px 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tip-box::after {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+        }
+
+        .tip-box .tip-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #e94560;
+            margin-bottom: 8px;
+        }
+
+        .tip-box .tip-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+
+        .tip-box .tip-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.85);
+        }
+
+        /* TIMELINE */
+        .timeline {
+            position: relative;
+            padding-left: 24px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 8px;
+            bottom: 8px;
+            width: 2px;
+            background: #e8eaed;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .timeline-item:last-child { padding-bottom: 0; }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -22px;
+            top: 6px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #0f3460;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 2px #e8eaed;
+        }
+
+        .timeline-date {
+            font-size: 11px;
+            font-weight: 600;
+            color: #e94560;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .timeline-title { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+        .timeline-desc { font-size: 13px; color: #666; margin-top: 2px; }
+
+        /* FOOTER */
+        .footer {
+            background: #f8f9fb;
+            border-top: 1px solid #e8eaed;
+            padding: 28px 48px;
+            text-align: center;
+        }
+
+        .footer-tagline { font-size: 14px; font-weight: 600; color: #1a1a2e; margin-bottom: 6px; }
+        .footer-sub { font-size: 12px; color: #888; }
+
+        @media print {
+            body { background: #fff; }
+            .newsletter { box-shadow: none; max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="newsletter">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-top">
+            <div>
+                <div class="header-label">New Website & R&D Team</div>
+                <h1>Team Newsletter</h1>
+                <div class="header-subtitle">What's happening, what's next, and what matters</div>
+            </div>
+            <div class="header-date">
+                <div class="month">FEB 2026</div>
+                <div class="edition">Edition #1</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATS BAR -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-number">12</div>
+            <div class="stat-label">Sites Launched</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">5</div>
+            <div class="stat-label">In Progress</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">3</div>
+            <div class="stat-label">R&D Items</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">98%</div>
+            <div class="stat-label">On-Time Rate</div>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- INTRO -->
+        <div class="intro">
+            <strong>Hey team!</strong> Welcome to our first newsletter. The goal here is simple: keep everyone in the loop on what we're building, celebrate wins, share useful tips, and look ahead at what's coming. If you've got something you want featured next time, send it my way. &mdash; <strong>Jamel</strong>
+        </div>
+
+        <!-- PROJECT UPDATES -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon blue">&#128736;</div>
+                <div class="section-title">Project Updates</div>
+            </div>
+            <div class="project-grid">
+                <div class="project-card">
+                    <div class="project-name">Sunrise Funeral Home</div>
+                    <span class="project-status status-active">Active Build</span>
+                    <div class="project-desc">WordPress build in progress. Homepage and service pages drafted. Waiting on client photo assets for the gallery section.</div>
+                </div>
+                <div class="project-card">
+                    <div class="project-name">Valley Windows & Doors</div>
+                    <span class="project-status status-review">In Review</span>
+                    <div class="project-desc">Full site delivered for client review. Expecting feedback by end of week. Mobile optimization looks solid.</div>
+                </div>
+                <div class="project-card">
+                    <div class="project-name">Portal System v2.4</div>
+                    <span class="project-status status-active">Active Build</span>
+                    <div class="project-desc">New PTO request workflow rolling out. Bug fixes for meeting scheduler complete. Evaluation module next.</div>
+                </div>
+                <div class="project-card">
+                    <div class="project-name">Comfort Care Hospice</div>
+                    <span class="project-status status-planning">Planning</span>
+                    <div class="project-desc">Discovery call completed. Sitemap approved. Starting wireframes next week. Sensitive tone review scheduled.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TEAM WINS -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon green">&#11088;</div>
+                <div class="section-title">Team Wins & Shoutouts</div>
+            </div>
+            <div class="wins-grid">
+                <div class="win-card">
+                    <div class="win-emoji">&#127942;</div>
+                    <div class="win-name">[Team Member Name]</div>
+                    <div class="win-desc">Crushed the Valley Windows build ahead of schedule. Clean code, zero revisions needed on the contact forms.</div>
+                </div>
+                <div class="win-card">
+                    <div class="win-emoji">&#128161;</div>
+                    <div class="win-name">[Team Member Name]</div>
+                    <div class="win-desc">Found and fixed that recurring Portal bug that's been bugging us for weeks. Great detective work.</div>
+                </div>
+                <div class="win-card">
+                    <div class="win-emoji">&#127891;</div>
+                    <div class="win-name">[Team Member Name]</div>
+                    <div class="win-desc">Completed the Laravel certification course. Already applying new patterns in the Portal codebase.</div>
+                </div>
+                <div class="win-card">
+                    <div class="win-emoji">&#129309;</div>
+                    <div class="win-name">Whole Team</div>
+                    <div class="win-desc">12 sites launched this quarter with a 98% on-time delivery rate. That's the standard we set &mdash; and we hit it.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KEY UPDATES -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon orange">&#128227;</div>
+                <div class="section-title">Key Updates & Announcements</div>
+            </div>
+            <ul class="update-list">
+                <li>
+                    <div class="update-bullet"></div>
+                    <div class="update-text"><strong>Cloudways server migration</strong> &mdash; We're moving three older sites to the new cluster this month. Expect brief staging downtime during migration windows.</div>
+                </li>
+                <li>
+                    <div class="update-bullet"></div>
+                    <div class="update-text"><strong>New WordPress starter theme</strong> &mdash; The updated starter theme is ready in the repo. Uses our latest component library. All new builds should use it starting now.</div>
+                </li>
+                <li>
+                    <div class="update-bullet"></div>
+                    <div class="update-text"><strong>Brevo SMTP update</strong> &mdash; Brevo changed their API rate limits. Contact forms on high-traffic sites should use the queue pattern. Docs updated in the Portal wiki.</div>
+                </li>
+                <li>
+                    <div class="update-bullet"></div>
+                    <div class="update-text"><strong>R&D focus this sprint</strong> &mdash; AI-powered content suggestions for the Portal. Early prototype phase &mdash; if you want to be involved, let me know.</div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- TIP OF THE MONTH -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon purple">&#128218;</div>
+                <div class="section-title">Tip of the Month</div>
+            </div>
+            <div class="tip-box">
+                <div class="tip-label">Dev Tip</div>
+                <div class="tip-title">Speed Up Your Local WordPress Setup</div>
+                <div class="tip-content">
+                    Stop cloning full production databases for local dev. Export only the tables you need (posts, postmeta, options) and pair it with a sanitized users table. You'll cut setup time from 20 minutes to under 3.
+                </div>
+            </div>
+        </div>
+
+        <!-- LOOKING AHEAD -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon teal">&#128197;</div>
+                <div class="section-title">Looking Ahead</div>
+            </div>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">FEB 17 &ndash; 21</div>
+                    <div class="timeline-title">Comfort Care Hospice Wireframes</div>
+                    <div class="timeline-desc">Design review with the client. Sensitive content guidelines apply.</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">FEB 24 &ndash; 28</div>
+                    <div class="timeline-title">Portal v2.4 Evaluation Module</div>
+                    <div class="timeline-desc">New employee evaluation workflow ships to staging for testing.</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">MAR 3 &ndash; 7</div>
+                    <div class="timeline-title">Server Migration Window</div>
+                    <div class="timeline-desc">Three legacy sites move to the new Cloudways cluster.</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">MAR 10</div>
+                    <div class="timeline-title">Q1 Team Retrospective</div>
+                    <div class="timeline-desc">What went well, what to improve. Bring your honest takes.</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <div class="footer-tagline">New Website & R&D Team &mdash; Building better, together.</div>
+        <div class="footer-sub">Questions? Ideas for next edition? Drop them in the Teams channel or message Jamel directly.</div>
+    </div>
+
+</div>
+
+</body>
+</html>
